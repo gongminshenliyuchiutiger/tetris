@@ -17,83 +17,90 @@
         }
         .game-container {
             background: #111;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px #ff00ff, 0 0 30px #00ffff;
             text-align: center;
             border: 2px solid #00ffff;
+            max-width: 360px;
         }
         h1 {
-            font-size: 1.8em;
-            margin: 0 0 15px;
+            font-size: 1.5em;
+            margin: 0 0 10px;
             text-shadow: 2px 2px 4px #ff00ff, 4px 4px 8px #00ffff;
             color: #ffcc00;
         }
         .game-area {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 5px;
+        }
+        .tetris-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         canvas {
             border: 2px solid #ff00ff;
             background: #000;
             border-radius: 5px;
-            box-shadow: 0 0 10px #00ffff;
+            box-shadow: 0 0 8px #00ffff;
         }
         .info-panel {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             position: relative;
         }
         .score, .next-piece {
             background: #220044;
-            padding: 8px;
-            border-radius: 5px;
-            width: 80px;
-            box-shadow: 0 0 5px #ff00ff;
+            padding: 6px;
+            border-radius: 4px;
+            width: 60px;
+            box-shadow: 0 0 4px #ff00ff;
             border: 1px solid #00ffff;
         }
         .controls {
-            margin-top: 10px; /* 減少間距以靠近畫布 */
+            margin-top: 10px;
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
-            gap: 5px;
-            width: 240px; /* 與遊戲畫布寬度一致 */
-            margin-left: auto;
-            margin-right: auto;
+            gap: 3px;
         }
         button {
-            padding: 8px 15px;
-            font-size: 14px;
+            width: 50px;
+            height: 50px;
+            padding: 0;
+            font-size: 24px;
             background: #ff00ff;
             color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 0 5px #00ffff;
+            box-shadow: 0 0 4px #00ffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         button:hover {
             background: #00ffff;
             transform: scale(1.05);
-            box-shadow: 0 0 10px #ff00ff;
+            box-shadow: 0 0 8px #ff00ff;
         }
         .copyright {
-            margin-top: 15px;
-            font-size: 16px;
+            margin-top: 10px;
+            font-size: 14px;
             color: #888;
             text-shadow: 1px 1px 2px #00ffff;
         }
         .decor-image {
-            width: 120px;
+            width: 100px;
             height: auto;
             filter: drop-shadow(2px 2px 4px #ff00ff) drop-shadow(4px 4px 8px #00ffff);
             margin-top: 5px;
             position: absolute;
-            top: 230px; /* 從 250px 調整到 230px，往上移一點 */
+            top: 180px;
             left: 50%;
             transform: translateX(-50%) scale(0.85);
             transform-origin: center;
@@ -107,8 +114,8 @@
         }
         .explosion {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 15px;
+            height: 15px;
             background: radial-gradient(circle, #ff00ff, #00ffff, #ffcc00);
             border-radius: 50%;
             animation: explode 0.7s forwards;
@@ -119,8 +126,8 @@
     <div class="game-container">
         <h1>俄羅斯方塊疊疊不休系統</h1>
         <div class="game-area">
-            <div style="display: flex; flex-direction: column; align-items: center;">
-                <canvas id="tetris" width="240" height="400"></canvas>
+            <div class="tetris-container">
+                <canvas id="tetris" width="200" height="400"></canvas>
                 <div class="controls">
                     <button id="leftBtn">←</button>
                     <button id="rightBtn">→</button>
@@ -132,9 +139,9 @@
                 <div class="score">分數: <span id="score">0</span></div>
                 <div class="next-piece">
                     下一個:<br>
-                    <canvas id="next" width="80" height="80"></canvas>
+                    <canvas id="next" width="60" height="60"></canvas>
                 </div>
-                <div style="height: 120px; width: 120px; margin-top: 5px;"></div>
+                <div style="height: 100px; width: 100px; margin-top: 5px;"></div>
                 <img src="./image/LiyuChill.svg" alt="LiyuChill Decoration" class="decor-image" id="decorImage">
             </div>
         </div>
@@ -151,7 +158,7 @@
 
         const grid = 20;
         const rows = 20;
-        const cols = 12;
+        const cols = 10;
         let score = 0;
         let bonusMultiplier = 1;
         let bonusTime = 0;
