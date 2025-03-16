@@ -11,41 +11,129 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background: #f0f0f0;
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a0033, #330066); /* 賽博龐克紫藍漸變 */
+            font-family: 'Courier New', monospace;
+            color: #fff;
         }
         .game-container {
+            background: #111;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff; /* 霓虹紫與青色陰影 */
             text-align: center;
+            border: 2px solid #00ffff; /* 青色邊框 */
+        }
+        h1 {
+            font-size: 2em;
+            margin: 0 0 20px;
+            text-shadow: 2px 2px 4px #ff00ff, 4px 4px 8px #00ffff; /* 霓虹發光文字 */
+            color: #ffcc00; /* 亮黃色文字 */
+        }
+        .game-area {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
         }
         canvas {
-            border: 1px solid black;
-            background: white;
+            border: 2px solid #ff00ff; /* 霓虹紫邊框 */
+            background: #000;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #00ffff; /* 青色發光陰影 */
+        }
+        .info-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            position: relative; /* 為裝飾圖片提供定位參考 */
+        }
+        .score, .next-piece {
+            background: #220044; /* 深紫背景 */
+            padding: 10px;
+            border-radius: 5px;
+            width: 100px;
+            box-shadow: 0 0 5px #ff00ff; /* 紫色發光 */
+            border: 1px solid #00ffff; /* 青色邊框 */
         }
         .controls {
             margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
         }
         button {
             padding: 10px 20px;
-            margin: 5px;
             font-size: 16px;
+            background: #ff00ff; /* 霓虹紫按鈕 */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 5px #00ffff; /* 青色發光 */
+        }
+        button:hover {
+            background: #00ffff; /* 懸停時變為霓虹青 */
+            transform: scale(1.05);
+            box-shadow: 0 0 10px #ff00ff; /* 紫色發光增強 */
         }
         .copyright {
             margin-top: 20px;
-            font-size: 14px;
-            color: #666;
+            font-size: 18px; /* 版權文字大小 */
+            color: #888;
+            text-shadow: 1px 1px 2px #00ffff; /* 青色發光 */
+        }
+        .decor-image {
+            width: 160px;
+            height: auto;
+            filter: drop-shadow(2px 2px 4px #ff00ff) drop-shadow(4px 4px 8px #00ffff); /* 雙色發光 */
+            margin-top: 10px;
+            position: absolute; /* 脫離文檔流 */
+            top: 180px; /* 根據原始位置調整，確保圖片中心不變 */
+            left: 50%; /* 水平居中 */
+            transform: translateX(-50%) scale(1); /* 初始縮放比例為 1 */
+            transform-origin: center; /* 縮放以中心點為基準 */
+            z-index: 10; /* 確保放大時不被遮蓋 */
+            transition: transform 0.1s linear; /* 平滑縮放效果 */
+        }
+        /* 爆炸動畫 */
+        @keyframes explode {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(2); opacity: 0.7; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+        .explosion {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, #ff00ff, #00ffff, #ffcc00); /* 強化漸變顏色 */
+            border-radius: 50%;
+            animation: explode 0.7s forwards; /* 延長動畫時間 */
         }
     </style>
 </head>
 <body>
     <div class="game-container">
         <h1>俄羅斯方塊疊疊不休系統</h1>
-        <div>分數: <span id="score">0</span></div>
-        <canvas id="tetris" width="240" height="400"></canvas>
+        <div class="game-area">
+            <canvas id="tetris" width="240" height="400"></canvas>
+            <div class="info-panel">
+                <div class="score">分數: <span id="score">0</span></div>
+                <div class="next-piece">
+                    下一個:<br>
+                    <canvas id="next" width="80" height="80"></canvas>
+                </div>
+                <!-- 為避免圖片放大影響佈局，增加一個占位元素 -->
+                <div style="height: 160px; width: 160px; margin-top: 10px;"></div>
+                <img src="./image/LiyuChill.svg" alt="LiyuChill Decoration" class="decor-image" id="decorImage">
+            </div>
+        </div>
         <div class="controls">
-            <button onclick="moveLeft()">左</button>
-            <button onclick="moveRight()">右</button>
-            <button onclick="rotate()">旋轉</button>
-            <button onclick="moveDown()">下</button>
+            <button id="leftBtn">←</button>
+            <button id="rightBtn">→</button>
+            <button id="rotateBtn">↻</button>
+            <button id="downBtn">↓</button>
         </div>
         <div class="copyright">Copyright © Liyuchiutiger Gongminshen</div>
     </div>
@@ -53,16 +141,22 @@
     <script>
         const canvas = document.getElementById('tetris');
         const context = canvas.getContext('2d');
+        const nextCanvas = document.getElementById('next');
+        const nextContext = nextCanvas.getContext('2d');
         const scoreElement = document.getElementById('score');
+        const decorImage = document.getElementById('decorImage');
 
         const grid = 20;
         const rows = 20;
         const cols = 12;
         let score = 0;
+        let bonusMultiplier = 1;
+        let bonusTime = 0;
+        let isInvisible = false;
 
         context.scale(grid, grid);
+        nextContext.scale(grid, grid);
 
-        // 遊戲區域
         let playfield = [];
         for (let r = 0; r < rows; r++) {
             playfield[r] = [];
@@ -71,7 +165,6 @@
             }
         }
 
-        // 方塊形狀
         const tetrominoes = [
             [[1,1,1,1]], // I
             [[1,1,1],[1,0,0]], // L
@@ -94,23 +187,29 @@
         ];
 
         let currentPiece;
+        let nextPiece;
         let gameOver = false;
 
         function createPiece() {
             const rand = Math.floor(Math.random() * tetrominoes.length);
-            return {
+            const piece = {
                 tetromino: tetrominoes[rand],
                 color: colors[rand + 1],
                 x: Math.floor(cols/2) - 1,
                 y: 0
             };
+            if (Math.random() < 0.1) {
+                isInvisible = true;
+            } else {
+                isInvisible = false;
+            }
+            return piece;
         }
 
         function draw() {
-            context.fillStyle = '#fff';
+            context.fillStyle = '#000';
             context.fillRect(0, 0, canvas.width/grid, canvas.height/grid);
 
-            // 畫遊戲區域
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     if (playfield[r][c]) {
@@ -120,12 +219,22 @@
                 }
             }
 
-            // 畫當前方塊
             currentPiece.tetromino.forEach((row, y) => {
                 row.forEach((value, x) => {
                     if (value) {
-                        context.fillStyle = currentPiece.color;
+                        context.fillStyle = isInvisible ? 'rgba(255,255,255,0.2)' : currentPiece.color;
                         context.fillRect(currentPiece.x + x, currentPiece.y + y, 1, 1);
+                    }
+                });
+            });
+
+            nextContext.fillStyle = '#220044';
+            nextContext.fillRect(0, 0, nextCanvas.width/grid, nextCanvas.height/grid);
+            nextPiece.tetromino.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        nextContext.fillStyle = nextPiece.color;
+                        nextContext.fillRect(x + 1, y + 1, 1, 1);
                     }
                 });
             });
@@ -153,6 +262,7 @@
                     }
                 });
             });
+            isInvisible = false;
         }
 
         function moveDown() {
@@ -160,13 +270,17 @@
             if (collide()) {
                 currentPiece.y--;
                 merge();
-                currentPiece = createPiece();
+                currentPiece = nextPiece;
+                nextPiece = createPiece();
                 if (collide()) {
                     gameOver = true;
                     alert('遊戲結束！得分：' + score);
                     playfield.forEach(row => row.fill(0));
                     score = 0;
                     gameOver = false;
+                    nextPiece = createPiece();
+                    bonusMultiplier = 1;
+                    document.body.style.background = 'linear-gradient(135deg, #1a0033, #330066)';
                 }
                 removeLines();
             }
@@ -220,8 +334,33 @@
                 lines++;
                 y++;
             }
-            score += lines * 10;
-            scoreElement.textContent = score;
+            if (lines > 0) {
+                score += lines * 10 * bonusMultiplier;
+                scoreElement.textContent = score;
+
+                if (lines >= 2) {
+                    document.body.style.background = 'linear-gradient(135deg, #ff00ff, #00ffff)';
+                    setTimeout(() => {
+                        document.body.style.background = 'linear-gradient(135deg, #1a0033, #330066)';
+                    }, 1000);
+                }
+
+                if (Math.random() < 0.2) {
+                    if (Math.random() < 0.5) {
+                        dropInterval = 500;
+                        setTimeout(() => dropInterval = 1000, 5000);
+                    } else {
+                        playfield.pop();
+                        playfield.unshift(new Array(cols).fill(0));
+                        score += 50 * bonusMultiplier;
+                    }
+                }
+
+                if (Math.random() < 0.1) {
+                    bonusMultiplier = 2;
+                    bonusTime = 10000;
+                }
+            }
         }
 
         let dropCounter = 0;
@@ -239,11 +378,17 @@
                 moveDown();
             }
 
+            if (bonusTime > 0) {
+                bonusTime -= deltaTime;
+                if (bonusTime <= 0) {
+                    bonusMultiplier = 1;
+                }
+            }
+
             draw();
             requestAnimationFrame(update);
         }
 
-        // 鍵盤控制
         document.addEventListener('keydown', event => {
             if (event.key === 'ArrowLeft') moveLeft();
             if (event.key === 'ArrowRight') moveRight();
@@ -251,7 +396,65 @@
             if (event.key === 'ArrowUp') rotate();
         });
 
+        let intervalId = null;
+        function startAction(action) {
+            action();
+            intervalId = setInterval(action, 100);
+        }
+        function stopAction() {
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+        }
+
+        const leftBtn = document.getElementById('leftBtn');
+        const rightBtn = document.getElementById('rightBtn');
+        const rotateBtn = document.getElementById('rotateBtn');
+        const downBtn = document.getElementById('downBtn');
+
+        leftBtn.addEventListener('mousedown', () => startAction(moveLeft));
+        rightBtn.addEventListener('mousedown', () => startAction(moveRight));
+        downBtn.addEventListener('mousedown', () => startAction(moveDown));
+
+        document.addEventListener('mouseup', stopAction);
+        document.addEventListener('mouseleave', stopAction);
+
+        rotateBtn.addEventListener('click', rotate);
+
+        // 彩蛋功能
+        let currentScale = 1; // 初始縮放比例
+
+        decorImage.addEventListener('click', () => {
+            currentScale += 0.2; // 每次點擊增加 0.2 的縮放比例
+            decorImage.style.transform = `translateX(-50%) scale(${currentScale})`;
+            if (currentScale >= 2.5) { // 當縮放到 2.5 倍時觸發爆炸
+                explode();
+            }
+        });
+
+        function explode() {
+            const rect = decorImage.getBoundingClientRect();
+            const explosionCount = 20; // 增加粒子數量
+            for (let i = 0; i < explosionCount; i++) {
+                const explosion = document.createElement('div');
+                explosion.className = 'explosion';
+                explosion.style.left = `${rect.left + Math.random() * rect.width}px`;
+                explosion.style.top = `${rect.top + Math.random() * rect.height}px`;
+                document.body.appendChild(explosion);
+                setTimeout(() => explosion.remove(), 700); // 與動畫時間同步
+            }
+            // 隨機分數
+            const scoreChange = [ -20, -10, -5, 0, 5, 10, 20 ][Math.floor(Math.random() * 7)];
+            score += scoreChange;
+            scoreElement.textContent = score;
+            // 圖片立即消失並重置
+            currentScale = 1;
+            decorImage.style.transform = `translateX(-50%) scale(${currentScale})`;
+        }
+
         currentPiece = createPiece();
+        nextPiece = createPiece();
         update();
     </script>
 </body>
