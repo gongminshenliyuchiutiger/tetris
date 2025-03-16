@@ -399,22 +399,65 @@
             requestAnimationFrame(update);
         }
 
+        // 按鍵長按處理
+        let keyIntervalId = null;
+        let keyHeld = false;
+
+        function startKeyAction(action) {
+            if (!keyHeld) {
+                action(); // 立即執行一次
+                keyHeld = true;
+                keyIntervalId = setInterval(action, 100); // 每100毫秒重複執行
+            }
+        }
+
+        function stopKeyAction() {
+            if (keyIntervalId) {
+                clearInterval(keyIntervalId);
+                keyIntervalId = null;
+            }
+            keyHeld = false;
+        }
+
         document.addEventListener('keydown', event => {
-            if (event.key === 'ArrowLeft') moveLeft();
-            if (event.key === 'ArrowRight') moveRight();
-            if (event.key === 'ArrowDown') moveDown();
-            if (event.key === 'ArrowUp') rotate();
+            switch (event.key) {
+                case 'ArrowLeft':
+                    event.preventDefault(); // 防止頁面滾動
+                    startKeyAction(moveLeft);
+                    break;
+                case 'ArrowRight':
+                    event.preventDefault();
+                    startKeyAction(moveRight);
+                    break;
+                case 'ArrowDown':
+                    event.preventDefault();
+                    startKeyAction(moveDown);
+                    break;
+                case 'ArrowUp':
+                    event.preventDefault();
+                    rotate(); // 旋轉保持單次觸發
+                    break;
+            }
         });
 
-        let intervalId = null;
-        function startAction(action) {
+        document.addEventListener('keyup', event => {
+            if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+                stopKeyAction();
+            }
+        });
+
+        // 按鈕長按處理（保持不變）
+        let buttonIntervalId = null;
+
+        function startButtonAction(action) {
             action();
-            intervalId = setInterval(action, 100);
+            buttonIntervalId = setInterval(action, 100);
         }
-        function stopAction() {
-            if (intervalId) {
-                clearInterval(intervalId);
-                intervalId = null;
+
+        function stopButtonAction() {
+            if (buttonIntervalId) {
+                clearInterval(buttonIntervalId);
+                buttonIntervalId = null;
             }
         }
 
@@ -423,12 +466,12 @@
         const rotateBtn = document.getElementById('rotateBtn');
         const downBtn = document.getElementById('downBtn');
 
-        leftBtn.addEventListener('mousedown', () => startAction(moveLeft));
-        rightBtn.addEventListener('mousedown', () => startAction(moveRight));
-        downBtn.addEventListener('mousedown', () => startAction(moveDown));
+        leftBtn.addEventListener('mousedown', () => startButtonAction(moveLeft));
+        rightBtn.addEventListener('mousedown', () => startButtonAction(moveRight));
+        downBtn.addEventListener('mousedown', () => startButtonAction(moveDown));
 
-        document.addEventListener('mouseup', stopAction);
-        document.addEventListener('mouseleave', stopAction);
+        document.addEventListener('mouseup', stopButtonAction);
+        document.addEventListener('mouseleave', stopButtonAction);
 
         rotateBtn.addEventListener('click', rotate);
 
@@ -448,6 +491,7 @@
             
             decorImage.style.opacity = '0';
             
+            // 創建爆炸粒子效果
             for (let i = 0; i < explosionCount; i++) {
                 const explosion = document.createElement('div');
                 explosion.className = 'explosion';
@@ -457,10 +501,41 @@
                 setTimeout(() => explosion.remove(), 700);
             }
             
+            // 計算分數變化
             const scoreChange = [-20, -10, -5, 0, 5, 10, 20][Math.floor(Math.random() * 7)];
             score += scoreChange;
             scoreElement.textContent = score;
             
+            // 創建分數變化動畫
+            const scoreAnimation = document.createElement('div');
+            scoreAnimation.textContent = scoreChange >= 0 ? `+${scoreChange}` : scoreChange;
+            scoreAnimation.style.position = 'absolute';
+            scoreAnimation.style.left = `${rect.left + rect.width / 2}px`;
+            scoreAnimation.style.top = `${rect.top + rect.height / 2}px`;
+            scoreAnimation.style.color = scoreChange >= 0 ? '#00ff00' : '#ff0000';
+            scoreAnimation.style.fontSize = '24px';
+            scoreAnimation.style.fontFamily = "'Courier New', monospace";
+            scoreAnimation.style.textShadow = '2px 2px 4px #ff00ff, 4px 4px 8px #00ffff';
+            scoreAnimation.style.zIndex = '100';
+            scoreAnimation.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(scoreAnimation);
+
+            // 分數動畫效果
+            let animationFrame = 0;
+            function animateScore() {
+                animationFrame++;
+                scoreAnimation.style.top = `${parseFloat(scoreAnimation.style.top) - 1}px`;
+                scoreAnimation.style.opacity = 1 - (animationFrame / 50);
+                
+                if (animationFrame < 50) {
+                    requestAnimationFrame(animateScore);
+                } else {
+                    scoreAnimation.remove();
+                }
+            }
+            requestAnimationFrame(animateScore);
+            
+            // 重置裝飾圖案
             setTimeout(() => {
                 currentScale = 0.85;
                 decorImage.style.transform = `translateX(-50%) scale(${currentScale}) rotate(0deg)`;
