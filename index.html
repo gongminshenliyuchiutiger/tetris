@@ -57,7 +57,7 @@
             background: #220044;
             padding: 6px;
             border-radius: 4px;
-            width: 60px;
+            width: 80px; /* 增加寬度以容納更大的畫布 */
             box-shadow: 0 0 4px #ff00ff;
             border: 1px solid #00ffff;
         }
@@ -139,7 +139,7 @@
                 <div class="score">分數: <span id="score">0</span></div>
                 <div class="next-piece">
                     下一個:<br>
-                    <canvas id="next" width="60" height="60"></canvas>
+                    <canvas id="next" width="80" height="80"></canvas> <!-- 增加畫布尺寸 -->
                 </div>
                 <div style="height: 100px; width: 100px; margin-top: 5px;"></div>
                 <img src="./image/LiyuChill.svg" alt="LiyuChill Decoration" class="decor-image" id="decorImage">
@@ -165,7 +165,7 @@
         let isInvisible = false;
 
         context.scale(grid, grid);
-        nextContext.scale(grid, grid);
+        nextContext.scale(grid / 2, grid / 2); // 調整縮放比例以適應較小的畫布
 
         let playfield = [];
         for (let r = 0; r < rows; r++) {
@@ -238,13 +238,16 @@
                 });
             });
 
+            // 繪製下一個方塊，確保居中顯示
             nextContext.fillStyle = '#220044';
-            nextContext.fillRect(0, 0, nextCanvas.width/grid, nextCanvas.height/grid);
+            nextContext.fillRect(0, 0, nextCanvas.width/(grid/2), nextCanvas.height/(grid/2));
+            const offsetX = (4 - nextPiece.tetromino[0].length) / 2; // 水平居中
+            const offsetY = (4 - nextPiece.tetromino.length) / 2;   // 垂直居中
             nextPiece.tetromino.forEach((row, y) => {
                 row.forEach((value, x) => {
                     if (value) {
                         nextContext.fillStyle = nextPiece.color;
-                        nextContext.fillRect(x + 1, y + 1, 1, 1);
+                        nextContext.fillRect(x + offsetX, y + offsetY, 1, 1);
                     }
                 });
             });
@@ -446,7 +449,7 @@
             }
         });
 
-        // 按鈕長按處理（保持不變）
+        // 按鈕長按處理
         let buttonIntervalId = null;
 
         function startButtonAction(action) {
@@ -491,7 +494,6 @@
             
             decorImage.style.opacity = '0';
             
-            // 創建爆炸粒子效果
             for (let i = 0; i < explosionCount; i++) {
                 const explosion = document.createElement('div');
                 explosion.className = 'explosion';
@@ -501,12 +503,10 @@
                 setTimeout(() => explosion.remove(), 700);
             }
             
-            // 計算分數變化
             const scoreChange = [-20, -10, -5, 0, 5, 10, 20][Math.floor(Math.random() * 7)];
             score += scoreChange;
             scoreElement.textContent = score;
             
-            // 創建分數變化動畫
             const scoreAnimation = document.createElement('div');
             scoreAnimation.textContent = scoreChange >= 0 ? `+${scoreChange}` : scoreChange;
             scoreAnimation.style.position = 'absolute';
@@ -520,7 +520,6 @@
             scoreAnimation.style.transform = 'translate(-50%, -50%)';
             document.body.appendChild(scoreAnimation);
 
-            // 分數動畫效果
             let animationFrame = 0;
             function animateScore() {
                 animationFrame++;
@@ -535,7 +534,6 @@
             }
             requestAnimationFrame(animateScore);
             
-            // 重置裝飾圖案
             setTimeout(() => {
                 currentScale = 0.85;
                 decorImage.style.transform = `translateX(-50%) scale(${currentScale}) rotate(0deg)`;
