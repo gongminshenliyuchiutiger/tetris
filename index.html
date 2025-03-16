@@ -11,93 +11,95 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background: linear-gradient(135deg, #1a0033, #330066); /* 賽博龐克紫藍漸變 */
+            background: linear-gradient(135deg, #1a0033, #330066);
             font-family: 'Courier New', monospace;
             color: #fff;
         }
         .game-container {
             background: #111;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
-            box-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff; /* 霓虹紫與青色陰影 */
+            box-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff;
             text-align: center;
-            border: 2px solid #00ffff; /* 青色邊框 */
+            border: 2px solid #00ffff;
         }
         h1 {
-            font-size: 2em;
-            margin: 0 0 20px;
-            text-shadow: 2px 2px 4px #ff00ff, 4px 4px 8px #00ffff; /* 霓虹發光文字 */
-            color: #ffcc00; /* 亮黃色文字 */
+            font-size: 1.8em;
+            margin: 0 0 15px;
+            text-shadow: 2px 2px 4px #ff00ff, 4px 4px 8px #00ffff;
+            color: #ffcc00;
         }
         .game-area {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 10px;
         }
         canvas {
-            border: 2px solid #ff00ff; /* 霓虹紫邊框 */
+            border: 2px solid #ff00ff;
             background: #000;
             border-radius: 5px;
-            box-shadow: 0 0 10px #00ffff; /* 青色發光陰影 */
+            box-shadow: 0 0 10px #00ffff;
         }
         .info-panel {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
-            position: relative; /* 為裝飾圖片提供定位參考 */
+            gap: 10px;
+            position: relative;
         }
         .score, .next-piece {
-            background: #220044; /* 深紫背景 */
-            padding: 10px;
+            background: #220044;
+            padding: 8px;
             border-radius: 5px;
-            width: 100px;
-            box-shadow: 0 0 5px #ff00ff; /* 紫色發光 */
-            border: 1px solid #00ffff; /* 青色邊框 */
+            width: 80px;
+            box-shadow: 0 0 5px #ff00ff;
+            border: 1px solid #00ffff;
         }
         .controls {
-            margin-top: 20px;
+            margin-top: 10px; /* 減少間距以靠近畫布 */
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 10px;
+            gap: 5px;
+            width: 240px; /* 與遊戲畫布寬度一致 */
+            margin-left: auto;
+            margin-right: auto;
         }
         button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #ff00ff; /* 霓虹紫按鈕 */
+            padding: 8px 15px;
+            font-size: 14px;
+            background: #ff00ff;
             color: #fff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 0 5px #00ffff; /* 青色發光 */
+            box-shadow: 0 0 5px #00ffff;
         }
         button:hover {
-            background: #00ffff; /* 懸停時變為霓虹青 */
+            background: #00ffff;
             transform: scale(1.05);
-            box-shadow: 0 0 10px #ff00ff; /* 紫色發光增強 */
+            box-shadow: 0 0 10px #ff00ff;
         }
         .copyright {
-            margin-top: 20px;
-            font-size: 18px; /* 版權文字大小 */
+            margin-top: 15px;
+            font-size: 16px;
             color: #888;
-            text-shadow: 1px 1px 2px #00ffff; /* 青色發光 */
+            text-shadow: 1px 1px 2px #00ffff;
         }
         .decor-image {
-            width: 160px;
+            width: 120px;
             height: auto;
-            filter: drop-shadow(2px 2px 4px #ff00ff) drop-shadow(4px 4px 8px #00ffff); /* 雙色發光 */
-            margin-top: 10px;
-            position: absolute; /* 脫離文檔流 */
-            top: 180px; /* 根據原始位置調整，確保圖片中心不變 */
-            left: 50%; /* 水平居中 */
-            transform: translateX(-50%) scale(1); /* 初始縮放比例為 1 */
-            transform-origin: center; /* 縮放以中心點為基準 */
-            z-index: 10; /* 確保放大時不被遮蓋 */
-            transition: transform 0.1s linear; /* 平滑縮放效果 */
+            filter: drop-shadow(2px 2px 4px #ff00ff) drop-shadow(4px 4px 8px #00ffff);
+            margin-top: 5px;
+            position: absolute;
+            top: 230px; /* 從 250px 調整到 230px，往上移一點 */
+            left: 50%;
+            transform: translateX(-50%) scale(0.85);
+            transform-origin: center;
+            z-index: 10;
+            transition: transform 0.1s linear;
         }
-        /* 爆炸動畫 */
         @keyframes explode {
             0% { transform: scale(1); opacity: 1; }
             50% { transform: scale(2); opacity: 0.7; }
@@ -105,11 +107,11 @@
         }
         .explosion {
             position: absolute;
-            width: 30px;
-            height: 30px;
-            background: radial-gradient(circle, #ff00ff, #00ffff, #ffcc00); /* 強化漸變顏色 */
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ff00ff, #00ffff, #ffcc00);
             border-radius: 50%;
-            animation: explode 0.7s forwards; /* 延長動畫時間 */
+            animation: explode 0.7s forwards;
         }
     </style>
 </head>
@@ -117,23 +119,24 @@
     <div class="game-container">
         <h1>俄羅斯方塊疊疊不休系統</h1>
         <div class="game-area">
-            <canvas id="tetris" width="240" height="400"></canvas>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <canvas id="tetris" width="240" height="400"></canvas>
+                <div class="controls">
+                    <button id="leftBtn">←</button>
+                    <button id="rightBtn">→</button>
+                    <button id="rotateBtn">↻</button>
+                    <button id="downBtn">↓</button>
+                </div>
+            </div>
             <div class="info-panel">
                 <div class="score">分數: <span id="score">0</span></div>
                 <div class="next-piece">
                     下一個:<br>
                     <canvas id="next" width="80" height="80"></canvas>
                 </div>
-                <!-- 為避免圖片放大影響佈局，增加一個占位元素 -->
-                <div style="height: 160px; width: 160px; margin-top: 10px;"></div>
+                <div style="height: 120px; width: 120px; margin-top: 5px;"></div>
                 <img src="./image/LiyuChill.svg" alt="LiyuChill Decoration" class="decor-image" id="decorImage">
             </div>
-        </div>
-        <div class="controls">
-            <button id="leftBtn">←</button>
-            <button id="rightBtn">→</button>
-            <button id="rotateBtn">↻</button>
-            <button id="downBtn">↓</button>
         </div>
         <div class="copyright">Copyright © Liyuchiutiger Gongminshen</div>
     </div>
@@ -422,35 +425,40 @@
 
         rotateBtn.addEventListener('click', rotate);
 
-        // 彩蛋功能
-        let currentScale = 1; // 初始縮放比例
+        let currentScale = 0.85;
 
         decorImage.addEventListener('click', () => {
-            currentScale += 0.2; // 每次點擊增加 0.2 的縮放比例
-            decorImage.style.transform = `translateX(-50%) scale(${currentScale})`;
-            if (currentScale >= 2.5) { // 當縮放到 2.5 倍時觸發爆炸
+            currentScale += 0.2;
+            decorImage.style.transform = `translateX(-50%) scale(${currentScale}) rotate(${currentScale * 360}deg)`;
+            if (currentScale >= 2.5) {
                 explode();
             }
         });
 
         function explode() {
             const rect = decorImage.getBoundingClientRect();
-            const explosionCount = 20; // 增加粒子數量
+            const explosionCount = 20;
+            
+            decorImage.style.opacity = '0';
+            
             for (let i = 0; i < explosionCount; i++) {
                 const explosion = document.createElement('div');
                 explosion.className = 'explosion';
                 explosion.style.left = `${rect.left + Math.random() * rect.width}px`;
                 explosion.style.top = `${rect.top + Math.random() * rect.height}px`;
                 document.body.appendChild(explosion);
-                setTimeout(() => explosion.remove(), 700); // 與動畫時間同步
+                setTimeout(() => explosion.remove(), 700);
             }
-            // 隨機分數
-            const scoreChange = [ -20, -10, -5, 0, 5, 10, 20 ][Math.floor(Math.random() * 7)];
+            
+            const scoreChange = [-20, -10, -5, 0, 5, 10, 20][Math.floor(Math.random() * 7)];
             score += scoreChange;
             scoreElement.textContent = score;
-            // 圖片立即消失並重置
-            currentScale = 1;
-            decorImage.style.transform = `translateX(-50%) scale(${currentScale})`;
+            
+            setTimeout(() => {
+                currentScale = 0.85;
+                decorImage.style.transform = `translateX(-50%) scale(${currentScale}) rotate(0deg)`;
+                decorImage.style.opacity = '1';
+            }, 700);
         }
 
         currentPiece = createPiece();
