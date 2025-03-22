@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>俄羅斯方塊疊疊不休系統</title>
+    <!-- 引入 Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
             display: flex;
@@ -14,6 +16,8 @@
             background: linear-gradient(135deg, #1a0033, #330066);
             font-family: 'Courier New', monospace;
             color: #fff;
+            overflow: hidden;
+            position: relative;
         }
         .game-container {
             background: #111;
@@ -23,6 +27,8 @@
             text-align: center;
             border: 2px solid #00ffff;
             max-width: 360px;
+            position: relative;
+            z-index: 10;
         }
         h1 {
             font-size: 1.5em;
@@ -39,6 +45,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
         }
         canvas {
             border: 2px solid #ff00ff;
@@ -57,7 +64,7 @@
             background: #220044;
             padding: 6px;
             border-radius: 4px;
-            width: 80px; /* 增加寬度以容納更大的畫布 */
+            width: 80px;
             box-shadow: 0 0 4px #ff00ff;
             border: 1px solid #00ffff;
         }
@@ -66,6 +73,7 @@
             display: flex;
             justify-content: center;
             gap: 3px;
+            align-items: center;
         }
         button {
             width: 50px;
@@ -77,16 +85,60 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background 0.2s;
             box-shadow: 0 0 4px #00ffff;
             display: flex;
             justify-content: center;
             align-items: center;
         }
         button:hover {
-            background: #00ffff;
-            transform: scale(1.05);
+            background: #800080;
+            transform: scale(1.01);
             box-shadow: 0 0 8px #ff00ff;
+        }
+        button:active {
+            background: #660066;
+            transform: scale(1);
+        }
+        .start-button {
+            width: 120px;
+            height: 50px;
+            font-size: 20px;
+            background: linear-gradient(135deg, #00ffff, #800080);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+        }
+        .start-button:hover {
+            background: linear-gradient(135deg, #00cccc, #660066);
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 8px #ff00ff;
+        }
+        .start-button:active {
+            background: linear-gradient(135deg, #009999, #4d004d);
+            transform: translate(-50%, -50%);
+        }
+        .restart-button {
+            width: 100px;
+            height: 50px;
+            font-size: 16px;
+            background: linear-gradient(135deg, #00ffff, #800080);
+            display: none;
+            position: absolute;
+            top: 412px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .restart-button:hover {
+            background: linear-gradient(135deg, #00cccc, #660066);
+            transform: translateX(-50%);
+            box-shadow: 0 0 8px #ff00ff;
+        }
+        .restart-button:active {
+            background: linear-gradient(135deg, #009999, #4d004d);
+            transform: translateX(-50%);
         }
         .copyright {
             margin-top: 10px;
@@ -120,6 +172,95 @@
             border-radius: 50%;
             animation: explode 0.7s forwards;
         }
+        .music-controls {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .music-button {
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .music-button:hover {
+            transform: scale(1.1);
+        }
+        .music-button:active {
+            transform: scale(1);
+        }
+        .music-button i {
+            background: linear-gradient(135deg, #00ffff, #800080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        input[type="range"] {
+            width: 100px;
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 5px;
+            background: #220044;
+            outline: none;
+            position: relative;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 8px;
+            border-radius: 5px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #ff00ff;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -4px;
+            box-shadow: 0 0 4px #00ffff;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #800080;
+        }
+        input[type="range"] {
+            background: linear-gradient(to right, #00ffff 0%, #800080 50%, #220044 50%, #220044 100%);
+            background-size: 200% 100%;
+            background-position: 100% 0;
+            transition: background-position 0.1s;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            background: none;
+        }
+        /* 背景旋轉圖案 */
+        .background-pattern {
+            position: absolute;
+            opacity: 0.2;
+            z-index: 1;
+            cursor: grab; /* 顯示可拖曳手勢 */
+            user-select: none; /* 防止選取 */
+        }
+        .background-pattern.dragging {
+            cursor: grabbing; /* 拖曳時的手勢 */
+            animation: shake 0.1s infinite; /* 抖動效果 */
+            transform: scale(1.5); /* 拖曳時放大 */
+            opacity: 0.4; /* 拖曳時稍微變明顯 */
+            z-index: 5; /* 拖曳時提升層級 */
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) scale(1.5); }
+            50% { transform: translate(-1px, -1px) scale(1.5); }
+            100% { transform: translate(1px, -1px) scale(1.5); }
+        }
     </style>
 </head>
 <body>
@@ -128,6 +269,7 @@
         <div class="game-area">
             <div class="tetris-container">
                 <canvas id="tetris" width="200" height="400"></canvas>
+                <button id="startBtn" class="start-button">開始遊戲</button>
                 <div class="controls">
                     <button id="leftBtn">←</button>
                     <button id="rightBtn">→</button>
@@ -139,14 +281,21 @@
                 <div class="score">分數: <span id="score">0</span></div>
                 <div class="next-piece">
                     下一個:<br>
-                    <canvas id="next" width="80" height="80"></canvas> <!-- 增加畫布尺寸 -->
+                    <canvas id="next" width="80" height="80"></canvas>
                 </div>
                 <div style="height: 100px; width: 100px; margin-top: 5px;"></div>
                 <img src="./image/LiyuChill.svg" alt="LiyuChill Decoration" class="decor-image" id="decorImage">
+                <button id="restartBtn" class="restart-button">重新開始</button>
             </div>
+        </div>
+        <div class="music-controls">
+            <button id="playPauseBtn" class="music-button"><i class="fas fa-play"></i></button>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
         </div>
         <div class="copyright">Copyright © Liyuchiutiger Gongminshen</div>
     </div>
+
+    <audio id="backgroundMusic" src="./music/background.mp3" loop></audio>
 
     <script>
         const canvas = document.getElementById('tetris');
@@ -155,6 +304,15 @@
         const nextContext = nextCanvas.getContext('2d');
         const scoreElement = document.getElementById('score');
         const decorImage = document.getElementById('decorImage');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const leftBtn = document.getElementById('leftBtn');
+        const rightBtn = document.getElementById('rightBtn');
+        const rotateBtn = document.getElementById('rotateBtn');
+        const downBtn = document.getElementById('downBtn');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const backgroundMusic = document.getElementById('backgroundMusic');
 
         const grid = 20;
         const rows = 20;
@@ -163,9 +321,11 @@
         let bonusMultiplier = 1;
         let bonusTime = 0;
         let isInvisible = false;
+        let gameStarted = false;
+        let gameOver = false;
 
         context.scale(grid, grid);
-        nextContext.scale(grid / 2, grid / 2); // 調整縮放比例以適應較小的畫布
+        nextContext.scale(grid / 2, grid / 2);
 
         let playfield = [];
         for (let r = 0; r < rows; r++) {
@@ -198,7 +358,6 @@
 
         let currentPiece;
         let nextPiece;
-        let gameOver = false;
 
         function createPiece() {
             const rand = Math.floor(Math.random() * tetrominoes.length);
@@ -229,28 +388,31 @@
                 }
             }
 
-            currentPiece.tetromino.forEach((row, y) => {
-                row.forEach((value, x) => {
-                    if (value) {
-                        context.fillStyle = isInvisible ? 'rgba(255,255,255,0.2)' : currentPiece.color;
-                        context.fillRect(currentPiece.x + x, currentPiece.y + y, 1, 1);
-                    }
+            if (gameStarted && currentPiece && !gameOver) {
+                currentPiece.tetromino.forEach((row, y) => {
+                    row.forEach((value, x) => {
+                        if (value) {
+                            context.fillStyle = isInvisible ? 'rgba(255,255,255,0.2)' : currentPiece.color;
+                            context.fillRect(currentPiece.x + x, currentPiece.y + y, 1, 1);
+                        }
+                    });
                 });
-            });
+            }
 
-            // 繪製下一個方塊，確保居中顯示
             nextContext.fillStyle = '#220044';
             nextContext.fillRect(0, 0, nextCanvas.width/(grid/2), nextCanvas.height/(grid/2));
-            const offsetX = (4 - nextPiece.tetromino[0].length) / 2; // 水平居中
-            const offsetY = (4 - nextPiece.tetromino.length) / 2;   // 垂直居中
-            nextPiece.tetromino.forEach((row, y) => {
-                row.forEach((value, x) => {
-                    if (value) {
-                        nextContext.fillStyle = nextPiece.color;
-                        nextContext.fillRect(x + offsetX, y + offsetY, 1, 1);
-                    }
+            if (nextPiece) {
+                const offsetX = (4 - nextPiece.tetromino[0].length) / 2;
+                const offsetY = (4 - nextPiece.tetromino.length) / 2;
+                nextPiece.tetromino.forEach((row, y) => {
+                    row.forEach((value, x) => {
+                        if (value) {
+                            nextContext.fillStyle = nextPiece.color;
+                            nextContext.fillRect(x + offsetX, y + offsetY, 1, 1);
+                        }
+                    });
                 });
-            });
+            }
         }
 
         function collide() {
@@ -287,13 +449,10 @@
                 nextPiece = createPiece();
                 if (collide()) {
                     gameOver = true;
-                    alert('遊戲結束！得分：' + score);
-                    playfield.forEach(row => row.fill(0));
-                    score = 0;
-                    gameOver = false;
-                    nextPiece = createPiece();
-                    bonusMultiplier = 1;
-                    document.body.style.background = 'linear-gradient(135deg, #1a0033, #330066)';
+                    alert(`遊戲結束！得分：${score}`);
+                    restartBtn.style.display = 'none';
+                    startBtn.style.display = 'flex';
+                    resetGame();
                 }
                 removeLines();
             }
@@ -381,7 +540,10 @@
         let lastTime = 0;
 
         function update(time = 0) {
-            if (gameOver) return;
+            if (!gameStarted || gameOver) {
+                draw();
+                return;
+            }
 
             const deltaTime = time - lastTime;
             lastTime = time;
@@ -402,15 +564,31 @@
             requestAnimationFrame(update);
         }
 
+        // 重置遊戲函數
+        function resetGame() {
+            playfield.forEach(row => row.fill(0));
+            score = 0;
+            scoreElement.textContent = score;
+            bonusMultiplier = 1;
+            bonusTime = 0;
+            dropInterval = 1000;
+            currentPiece = createPiece();
+            nextPiece = createPiece();
+            gameOver = false;
+            gameStarted = false;
+            document.body.style.background = 'linear-gradient(135deg, #1a0033, #330066)';
+            draw();
+        }
+
         // 按鍵長按處理
         let keyIntervalId = null;
         let keyHeld = false;
 
         function startKeyAction(action) {
-            if (!keyHeld) {
-                action(); // 立即執行一次
+            if (!keyHeld && gameStarted && !gameOver) {
+                action();
                 keyHeld = true;
-                keyIntervalId = setInterval(action, 100); // 每100毫秒重複執行
+                keyIntervalId = setInterval(action, 100);
             }
         }
 
@@ -423,9 +601,10 @@
         }
 
         document.addEventListener('keydown', event => {
+            if (!gameStarted || gameOver) return;
             switch (event.key) {
                 case 'ArrowLeft':
-                    event.preventDefault(); // 防止頁面滾動
+                    event.preventDefault();
                     startKeyAction(moveLeft);
                     break;
                 case 'ArrowRight':
@@ -438,7 +617,7 @@
                     break;
                 case 'ArrowUp':
                     event.preventDefault();
-                    rotate(); // 旋轉保持單次觸發
+                    rotate();
                     break;
             }
         });
@@ -449,12 +628,14 @@
             }
         });
 
-        // 按鈕長按處理
+        // 按鈕長按處理 (支援滑鼠和觸控)
         let buttonIntervalId = null;
 
-        function startButtonAction(action) {
-            action();
-            buttonIntervalId = setInterval(action, 100);
+        function startButtonAction(action, button) {
+            if (gameStarted && !gameOver) {
+                action();
+                buttonIntervalId = setInterval(action, 100);
+            }
         }
 
         function stopButtonAction() {
@@ -464,23 +645,146 @@
             }
         }
 
-        const leftBtn = document.getElementById('leftBtn');
-        const rightBtn = document.getElementById('rightBtn');
-        const rotateBtn = document.getElementById('rotateBtn');
-        const downBtn = document.getElementById('downBtn');
+        // 按下時變色的通用函數
+        function setPressedStyle(button) {
+            if (button.classList.contains('start-button') || button.classList.contains('restart-button')) {
+                button.style.background = 'linear-gradient(135deg, #009999, #4d004d)';
+            } else if (!button.classList.contains('music-button')) {
+                button.style.background = '#660066';
+            }
+            button.style.transform = button.classList.contains('start-button') ? 'translate(-50%, -50%)' : 
+                                    button.classList.contains('restart-button') ? 'translateX(-50%)' : 'scale(1)';
+        }
 
-        leftBtn.addEventListener('mousedown', () => startButtonAction(moveLeft));
-        rightBtn.addEventListener('mousedown', () => startButtonAction(moveRight));
-        downBtn.addEventListener('mousedown', () => startButtonAction(moveDown));
+        function resetButtonStyle(button) {
+            if (button.classList.contains('start-button') || button.classList.contains('restart-button')) {
+                button.style.background = 'linear-gradient(135deg, #00ffff, #800080)';
+            } else if (!button.classList.contains('music-button')) {
+                button.style.background = '#ff00ff';
+            }
+            button.style.transform = button.classList.contains('start-button') ? 'translate(-50%, -50%)' : 
+                                    button.classList.contains('restart-button') ? 'translateX(-50%)' : '';
+        }
 
-        document.addEventListener('mouseup', stopButtonAction);
-        document.addEventListener('mouseleave', stopButtonAction);
+        // 滑鼠事件
+        leftBtn.addEventListener('mousedown', () => {
+            setPressedStyle(leftBtn);
+            startButtonAction(moveLeft, leftBtn);
+        });
+        rightBtn.addEventListener('mousedown', () => {
+            setPressedStyle(rightBtn);
+            startButtonAction(moveRight, rightBtn);
+        });
+        downBtn.addEventListener('mousedown', () => {
+            setPressedStyle(downBtn);
+            startButtonAction(moveDown, downBtn);
+        });
+        rotateBtn.addEventListener('mousedown', () => setPressedStyle(rotateBtn));
+        startBtn.addEventListener('mousedown', () => setPressedStyle(startBtn));
+        restartBtn.addEventListener('mousedown', () => setPressedStyle(restartBtn));
+        playPauseBtn.addEventListener('mousedown', () => setPressedStyle(playPauseBtn));
 
-        rotateBtn.addEventListener('click', rotate);
+        document.addEventListener('mouseup', (e) => {
+            stopButtonAction();
+            [leftBtn, rightBtn, downBtn, rotateBtn, startBtn, restartBtn, playPauseBtn].forEach(btn => resetButtonStyle(btn));
+        });
+        document.addEventListener('mouseleave', (e) => {
+            stopButtonAction();
+            [leftBtn, rightBtn, downBtn, rotateBtn, startBtn, restartBtn, playPauseBtn].forEach(btn => resetButtonStyle(btn));
+        });
+
+        // 觸控事件
+        leftBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            setPressedStyle(leftBtn);
+            startButtonAction(moveLeft, leftBtn);
+        });
+        rightBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            setPressedStyle(rightBtn);
+            startButtonAction(moveRight, rightBtn);
+        });
+        downBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            setPressedStyle(downBtn);
+            startButtonAction(moveDown, downBtn);
+        });
+        rotateBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            setPressedStyle(rotateBtn);
+            if (gameStarted && !gameOver) rotate();
+        });
+        startBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            setPressedStyle(startBtn);
+            if (!gameStarted) {
+                gameStarted = true;
+                gameOver = false;
+                startBtn.style.display = 'none';
+                restartBtn.style.display = 'flex';
+                update();
+            }
+        });
+        restartBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            setPressedStyle(restartBtn);
+            if (gameStarted) resetGame();
+            startBtn.style.display = 'flex';
+            restartBtn.style.display = 'none';
+        });
+        playPauseBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            setPressedStyle(playPauseBtn);
+        });
+
+        document.addEventListener('touchend', (e) => {
+            stopButtonAction();
+            [leftBtn, rightBtn, downBtn, rotateBtn, startBtn, restartBtn, playPauseBtn].forEach(btn => resetButtonStyle(btn));
+        });
+        document.addEventListener('touchcancel', (e) => {
+            stopButtonAction();
+            [leftBtn, rightBtn, downBtn, rotateBtn, startBtn, restartBtn, playPauseBtn].forEach(btn => resetButtonStyle(btn));
+        });
+
+        // 音樂控制
+        backgroundMusic.volume = 0.5;
+        let isPlaying = false;
+
+        playPauseBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                backgroundMusic.pause();
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            } else {
+                backgroundMusic.play();
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        playPauseBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            if (isPlaying) {
+                backgroundMusic.pause();
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            } else {
+                backgroundMusic.play();
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        volumeSlider.addEventListener('input', () => {
+            backgroundMusic.volume = volumeSlider.value;
+            const percentage = volumeSlider.value * 100;
+            volumeSlider.style.backgroundPosition = `${100 - percentage}% 0`;
+        });
+
+        volumeSlider.style.backgroundPosition = '50% 0';
 
         let currentScale = 0.85;
 
         decorImage.addEventListener('click', () => {
+            if (!gameStarted || gameOver) return;
             currentScale += 0.2;
             decorImage.style.transform = `translateX(-50%) scale(${currentScale}) rotate(${currentScale * 360}deg)`;
             if (currentScale >= 2.5) {
@@ -541,9 +845,150 @@
             }, 700);
         }
 
+        // 初始化遊戲但不開始
         currentPiece = createPiece();
         nextPiece = createPiece();
-        update();
+        draw();
+
+        startBtn.addEventListener('click', () => {
+            if (!gameStarted) {
+                gameStarted = true;
+                gameOver = false;
+                startBtn.style.display = 'none';
+                restartBtn.style.display = 'flex';
+                update();
+            }
+        });
+
+        rotateBtn.addEventListener('click', () => {
+            if (gameStarted && !gameOver) rotate();
+        });
+
+        restartBtn.addEventListener('click', () => {
+            if (gameStarted) resetGame();
+            startBtn.style.display = 'flex';
+            restartBtn.style.display = 'none';
+        });
+
+        // 背景圖案生成（平均分散）
+        function createBackgroundPatterns() {
+            const patternCount = 15;
+            const gridRows = 3; // 網格行數
+            const gridCols = 5; // 網格列數
+            const patternsPerCell = Math.ceil(patternCount / (gridRows * gridCols));
+            let patternIndex = 0;
+
+            for (let row = 0; row < gridRows && patternIndex < patternCount; row++) {
+                for (let col = 0; col < gridCols && patternIndex < patternCount; col++) {
+                    for (let i = 0; i < patternsPerCell && patternIndex < patternCount; i++) {
+                        const img = document.createElement('img');
+                        img.src = './image/LiyuChill.svg';
+                        img.className = 'background-pattern';
+
+                        // 隨機大小 (50px 到 200px)
+                        const size = Math.random() * 150 + 50;
+                        img.style.width = `${size}px`;
+                        img.style.height = 'auto';
+
+                        // 網格內隨機位置
+                        const cellWidth = 100 / gridCols;
+                        const cellHeight = 100 / gridRows;
+                        const xOffset = (col * cellWidth) + (Math.random() * cellWidth * 0.8) + (cellWidth * 0.1);
+                        const yOffset = (row * cellHeight) + (Math.random() * cellHeight * 0.8) + (cellHeight * 0.1);
+                        img.style.left = `${xOffset}vw`;
+                        img.style.top = `${yOffset}vh`;
+
+                        // 隨機透明度 (0.1 到 0.3)
+                        img.style.opacity = Math.random() * 0.2 + 0.1;
+
+                        // 隨機旋轉速度 (5s 到 20s)
+                        const spinDuration = Math.random() * 15 + 5;
+                        img.style.animation = `spin ${spinDuration}s linear infinite`;
+
+                        // 儲存初始樣式
+                        img.dataset.originalWidth = size;
+                        img.dataset.originalLeft = xOffset;
+                        img.dataset.originalTop = yOffset;
+                        img.dataset.spinDuration = spinDuration;
+
+                        document.body.appendChild(img);
+                        patternIndex++;
+                    }
+                }
+            }
+
+            // 添加互動功能
+            addPatternInteraction();
+        }
+
+        // 圖案互動功能
+        function addPatternInteraction() {
+            const patterns = document.querySelectorAll('.background-pattern');
+
+            patterns.forEach(pattern => {
+                let isDragging = false;
+                let startX, startY;
+
+                // 滑鼠事件
+                pattern.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    pattern.classList.add('dragging');
+                    startX = e.clientX - parseFloat(pattern.style.left) * window.innerWidth / 100;
+                    startY = e.clientY - parseFloat(pattern.style.top) * window.innerHeight / 100;
+                    e.preventDefault();
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging) {
+                        const newLeft = (e.clientX - startX) / window.innerWidth * 100;
+                        const newTop = (e.clientY - startY) / window.innerHeight * 100;
+                        pattern.style.left = `${newLeft}vw`;
+                        pattern.style.top = `${newTop}vh`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        pattern.classList.remove('dragging');
+                        pattern.style.width = `${pattern.dataset.originalWidth}px`;
+                        pattern.style.animation = `spin ${pattern.dataset.spinDuration}s linear infinite`;
+                    }
+                });
+
+                // 觸控事件
+                pattern.addEventListener('touchstart', (e) => {
+                    isDragging = true;
+                    pattern.classList.add('dragging');
+                    const touch = e.touches[0];
+                    startX = touch.clientX - parseFloat(pattern.style.left) * window.innerWidth / 100;
+                    startY = touch.clientY - parseFloat(pattern.style.top) * window.innerHeight / 100;
+                    e.preventDefault();
+                });
+
+                document.addEventListener('touchmove', (e) => {
+                    if (isDragging) {
+                        const touch = e.touches[0];
+                        const newLeft = (touch.clientX - startX) / window.innerWidth * 100;
+                        const newTop = (touch.clientY - startY) / window.innerHeight * 100;
+                        pattern.style.left = `${newLeft}vw`;
+                        pattern.style.top = `${newTop}vh`;
+                    }
+                });
+
+                document.addEventListener('touchend', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        pattern.classList.remove('dragging');
+                        pattern.style.width = `${pattern.dataset.originalWidth}px`;
+                        pattern.style.animation = `spin ${pattern.dataset.spinDuration}s linear infinite`;
+                    }
+                });
+            });
+        }
+
+        // 初始化背景圖案
+        createBackgroundPatterns();
     </script>
 </body>
 </html>
