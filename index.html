@@ -58,7 +58,8 @@
             flex-direction: column;
             align-items: center;
             gap: 8px;
-            position: relative;
+            position: relative; /* Needed for absolute positioning of buttons */
+            width: 100px; /* Give info panel a defined width */
         }
         .score, .next-piece {
             background: #220044;
@@ -75,7 +76,7 @@
             gap: 3px;
             align-items: center;
         }
-        button {
+        button { /* Base style for control buttons */
             width: 50px;
             height: 50px;
             padding: 0;
@@ -85,21 +86,22 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.1s;
             box-shadow: 0 0 4px #00ffff;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-        button:hover {
+        button:hover:not(.start-button):not(.game-action-button) {
             background: #800080;
             transform: scale(1.01);
             box-shadow: 0 0 8px #ff00ff;
         }
-        button:active {
+        button:active:not(.start-button):not(.game-action-button) {
             background: #660066;
             transform: scale(1);
         }
+
         .start-button {
             width: 120px;
             height: 50px;
@@ -109,37 +111,54 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 20;
+            z-index: 20; /* Ensure it's above canvas */
+            display: flex; /* Use flex for consistency */
+            justify-content: center;
+            align-items: center;
         }
         .start-button:hover {
             background: linear-gradient(135deg, #00cccc, #660066);
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%) scale(1.02); /* Keep transform */
             box-shadow: 0 0 8px #ff00ff;
         }
         .start-button:active {
             background: linear-gradient(135deg, #009999, #4d004d);
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%); /* Keep transform */
         }
-        .restart-button {
-            width: 100px;
+
+        /* Shared styles for Restart and Pause buttons */
+        .game-action-button {
+            width: 50px; /* Smaller square buttons */
             height: 50px;
-            font-size: 16px;
+            font-size: 20px; /* Icon size */
             background: linear-gradient(135deg, #00ffff, #800080);
-            display: none;
+            display: none; /* Initially hidden */
             position: absolute;
-            top: 412px;
             left: 50%;
             transform: translateX(-50%);
+            z-index: 15; /* Below start button but above others */
+             /* Ensure flex properties for icon centering */
+            justify-content: center;
+            align-items: center;
         }
-        .restart-button:hover {
+        .game-action-button:hover {
             background: linear-gradient(135deg, #00cccc, #660066);
-            transform: translateX(-50%);
+            transform: translateX(-50%) scale(1.05); /* Adjust transform */
             box-shadow: 0 0 8px #ff00ff;
         }
-        .restart-button:active {
+        .game-action-button:active {
             background: linear-gradient(135deg, #009999, #4d004d);
-            transform: translateX(-50%);
+            transform: translateX(-50%); /* Adjust transform */
         }
+
+        .pause-button {
+            top: 355px; /* Position above restart */
+        }
+
+        .restart-button {
+            top: 410px; /* Original position */
+        }
+
         .copyright {
             margin-top: 10px;
             font-size: 14px;
@@ -152,12 +171,13 @@
             filter: drop-shadow(2px 2px 4px #ff00ff) drop-shadow(4px 4px 8px #00ffff);
             margin-top: 5px;
             position: absolute;
-            top: 180px;
+            top: 180px; /* Adjusted slightly */
             left: 50%;
             transform: translateX(-50%) scale(0.85);
             transform-origin: center;
             z-index: 10;
-            transition: transform 0.1s linear;
+            transition: transform 0.1s linear, opacity 0.3s, filter 0.2s; /* Added filter transition */
+            cursor: pointer;
         }
         @keyframes explode {
             0% { transform: scale(1); opacity: 1; }
@@ -171,6 +191,8 @@
             background: radial-gradient(circle, #ff00ff, #00ffff, #ffcc00);
             border-radius: 50%;
             animation: explode 0.7s forwards;
+            z-index: 100; /* Ensure explosions are on top */
+            pointer-events: none; /* Prevent interaction */
         }
         .music-controls {
             margin-top: 15px;
@@ -190,6 +212,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            color: #fff; /* Ensure icon color is visible */
         }
         .music-button:hover {
             transform: scale(1.1);
@@ -200,16 +223,19 @@
         .music-button i {
             background: linear-gradient(135deg, #00ffff, #800080);
             -webkit-background-clip: text;
+            background-clip: text; /* Standard property */
             -webkit-text-fill-color: transparent;
         }
         input[type="range"] {
             width: 100px;
             -webkit-appearance: none;
+            appearance: none; /* Standard property */
             height: 8px;
             border-radius: 5px;
             background: #220044;
             outline: none;
             position: relative;
+             cursor: pointer; /* Add cursor */
         }
         input[type="range"]::-webkit-slider-runnable-track {
             height: 8px;
@@ -217,38 +243,65 @@
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
+            appearance: none; /* Standard property */
             width: 16px;
             height: 16px;
             background: #ff00ff;
             border-radius: 50%;
             cursor: pointer;
-            margin-top: -4px;
+            margin-top: -4px; /* Adjust thumb position vertically */
             box-shadow: 0 0 4px #00ffff;
         }
+        /* Firefox Thumb */
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #ff00ff;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none; /* Remove default border */
+             box-shadow: 0 0 4px #00ffff;
+        }
+
         input[type="range"]::-webkit-slider-thumb:hover {
             background: #800080;
         }
+         input[type="range"]::-moz-range-thumb:hover {
+            background: #800080;
+        }
+        /* Track fill effect */
         input[type="range"] {
             background: linear-gradient(to right, #00ffff 0%, #800080 50%, #220044 50%, #220044 100%);
-            background-size: 200% 100%;
-            background-position: 100% 0;
-            transition: background-position 0.1s;
+            background-size: 200% 100%; /* Needs to be 200% for the trick to work */
+            background-position: 100% 0; /* Start fully "empty" */
+            transition: background-position 0.1s linear; /* Smooth transition */
         }
-        input[type="range"]::-webkit-slider-runnable-track {
-            background: none;
+         /* Firefox Track - Note: Firefox handles progress differently */
+        input[type="range"]::-moz-range-track {
+             height: 8px;
+            border-radius: 5px;
+            background: #220044; /* Set the 'empty' part color */
         }
-        /* 背景旋轉圖案 */
+        input[type="range"]::-moz-range-progress { /* Style the filled part for Firefox */
+             height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #00ffff, #800080); /* Gradient for filled part */
+        }
+
+        /* Background Patterns */
         .background-pattern {
             position: absolute;
             opacity: 0.2;
             z-index: 1;
             cursor: grab; /* 顯示可拖曳手勢 */
             user-select: none; /* 防止選取 */
+            -webkit-user-drag: none; /* Prevent native drag */
+            transition: transform 0.1s linear, opacity 0.2s linear; /* Smooth transitions */
         }
         .background-pattern.dragging {
             cursor: grabbing; /* 拖曳時的手勢 */
-            animation: shake 0.1s infinite; /* 抖動效果 */
-            transform: scale(1.5); /* 拖曳時放大 */
+            animation: shake 0.1s infinite alternate; /* Use alternate for smoother shake */
+            /* transform handled by JS during drag */
             opacity: 0.4; /* 拖曳時稍微變明顯 */
             z-index: 5; /* 拖曳時提升層級 */
         }
@@ -256,10 +309,9 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) scale(1.5); }
-            50% { transform: translate(-1px, -1px) scale(1.5); }
-            100% { transform: translate(1px, -1px) scale(1.5); }
+        @keyframes shake { /* Adjusted shake for dragging */
+            from { transform: translate(1px, 0) scale(1.5); }
+            to { transform: translate(-1px, 0) scale(1.5); }
         }
     </style>
 </head>
@@ -271,10 +323,10 @@
                 <canvas id="tetris" width="200" height="400"></canvas>
                 <button id="startBtn" class="start-button">開始遊戲</button>
                 <div class="controls">
-                    <button id="leftBtn">←</button>
-                    <button id="rightBtn">→</button>
-                    <button id="rotateBtn">↻</button>
-                    <button id="downBtn">↓</button>
+                    <button id="leftBtn" aria-label="Move Left"><i class="fas fa-arrow-left"></i></button>
+                    <button id="rightBtn" aria-label="Move Right"><i class="fas fa-arrow-right"></i></button>
+                    <button id="rotateBtn" aria-label="Rotate"><i class="fas fa-rotate-right"></i></button> <!-- Changed icon -->
+                    <button id="downBtn" aria-label="Move Down"><i class="fas fa-arrow-down"></i></button>
                 </div>
             </div>
             <div class="info-panel">
@@ -283,18 +335,21 @@
                     下一個:<br>
                     <canvas id="next" width="80" height="80"></canvas>
                 </div>
-                <div style="height: 100px; width: 100px; margin-top: 5px;"></div>
+                <div style="height: 100px; width: 100px; margin-top: 5px;"></div> <!-- Spacer -->
                 <img src="./image/LiyuChill.svg" alt="LiyuChill Decoration" class="decor-image" id="decorImage">
-                <button id="restartBtn" class="restart-button">重新開始</button>
+                <!-- Pause and Restart Buttons -->
+                <button id="pauseResumeBtn" class="game-action-button pause-button" aria-label="Pause Game"><i class="fas fa-pause"></i></button>
+                <button id="restartBtn" class="game-action-button restart-button" aria-label="Restart Game"><i class="fas fa-sync-alt"></i></button>
             </div>
         </div>
         <div class="music-controls">
-            <button id="playPauseBtn" class="music-button"><i class="fas fa-play"></i></button>
-            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
+            <button id="playPauseBtn" class="music-button" aria-label="Play/Pause Music"><i class="fas fa-play"></i></button>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5" aria-label="Volume">
         </div>
         <div class="copyright">Copyright © Liyuchiutiger Gongminshen</div>
     </div>
 
+    <!-- Assume music file exists at this path -->
     <audio id="backgroundMusic" src="./music/background.mp3" loop></audio>
 
     <script>
@@ -306,6 +361,7 @@
         const decorImage = document.getElementById('decorImage');
         const startBtn = document.getElementById('startBtn');
         const restartBtn = document.getElementById('restartBtn');
+        const pauseResumeBtn = document.getElementById('pauseResumeBtn'); // Get pause button
         const leftBtn = document.getElementById('leftBtn');
         const rightBtn = document.getElementById('rightBtn');
         const rotateBtn = document.getElementById('rotateBtn');
@@ -319,95 +375,124 @@
         const cols = 10;
         let score = 0;
         let bonusMultiplier = 1;
-        let bonusTime = 0;
+        let bonusTime = 0; // Milliseconds
         let isInvisible = false;
         let gameStarted = false;
         let gameOver = false;
+        let isPaused = false; // Pause state variable
+        let animationFrameId = null; // To control requestAnimationFrame
+        let wasPlayingMusicBeforePause = false; // To resume music correctly
 
         context.scale(grid, grid);
-        nextContext.scale(grid / 2, grid / 2);
+        nextContext.scale(grid / 2, grid / 2); // Scaling for next piece preview
 
         let playfield = [];
-        for (let r = 0; r < rows; r++) {
-            playfield[r] = [];
-            for (let c = 0; c < cols; c++) {
-                playfield[r][c] = 0;
+        function initPlayfield() {
+            playfield = [];
+             for (let r = 0; r < rows; r++) {
+                playfield[r] = [];
+                for (let c = 0; c < cols; c++) {
+                    playfield[r][c] = 0;
+                }
             }
         }
+        initPlayfield(); // Initialize playfield on load
 
         const tetrominoes = [
-            [[1,1,1,1]], // I
-            [[1,1,1],[1,0,0]], // L
-            [[1,1,1],[0,0,1]], // J
-            [[1,1],[1,1]], // O
-            [[1,1,0],[0,1,1]], // S
-            [[0,1,1],[1,1,0]], // Z
-            [[1,1,1],[0,1,0]] // T
+            [[1,1,1,1]], // I (cyan)
+            [[1,1,1],[0,0,1]], // J (blue) - Original J
+            [[1,1,1],[1,0,0]], // L (orange) - Original L
+            [[1,1],[1,1]], // O (yellow)
+            [[0,1,1],[1,1,0]], // S (green) - Original S
+            [[1,1,0],[0,1,1]], // Z (red) - Original Z
+            [[0,1,0],[1,1,1]] // T (purple) - Original T
         ];
 
+        // Standard Tetris colors
         const colors = [
-            null,
-            '#FF0D72',
-            '#0DC2FF',
-            '#0DFF72',
-            '#F538FF',
-            '#FF8E0D',
-            '#FFE138',
-            '#3877FF'
+            null,       // 0: empty
+            '#00FFFF', // 1: I - Cyan
+            '#0000FF', // 2: J - Blue
+            '#FFA500', // 3: L - Orange
+            '#FFFF00', // 4: O - Yellow
+            '#00FF00', // 5: S - Green
+            '#FF0000', // 6: Z - Red
+            '#800080'  // 7: T - Purple
         ];
+
 
         let currentPiece;
         let nextPiece;
 
+        function getRandomInt(max) {
+            return Math.floor(Math.random() * max);
+        }
+
         function createPiece() {
-            const rand = Math.floor(Math.random() * tetrominoes.length);
+            const typeIndex = getRandomInt(tetrominoes.length);
+            const matrix = tetrominoes[typeIndex];
+            const colorIndex = typeIndex + 1; // Index in colors array matches typeIndex + 1
             const piece = {
-                tetromino: tetrominoes[rand],
-                color: colors[rand + 1],
-                x: Math.floor(cols/2) - 1,
+                tetromino: matrix,
+                color: colors[colorIndex],
+                colorIndex: colorIndex, // Store the index too for merging
+                x: Math.floor(cols / 2) - Math.floor(matrix[0].length / 2), // Center piece
                 y: 0
             };
-            if (Math.random() < 0.1) {
-                isInvisible = true;
-            } else {
-                isInvisible = false;
-            }
+
+            // Reset invisibility chance for each new piece
+            isInvisible = Math.random() < 0.1;
+
             return piece;
         }
 
         function draw() {
+            // Clear main canvas
             context.fillStyle = '#000';
-            context.fillRect(0, 0, canvas.width/grid, canvas.height/grid);
+            context.fillRect(0, 0, cols, rows); // Use scaled coordinates
 
+            // Draw playfield
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     if (playfield[r][c]) {
                         context.fillStyle = colors[playfield[r][c]];
                         context.fillRect(c, r, 1, 1);
+                        // Optional: Add border/3D effect
+                        // context.strokeStyle = 'rgba(0,0,0,0.3)';
+                        // context.strokeRect(c, r, 1, 1);
                     }
                 }
             }
 
+            // Draw current piece
             if (gameStarted && currentPiece && !gameOver) {
+                context.fillStyle = isInvisible ? 'rgba(255,255,255,0.3)' : currentPiece.color; // Handle invisible state
                 currentPiece.tetromino.forEach((row, y) => {
                     row.forEach((value, x) => {
                         if (value) {
-                            context.fillStyle = isInvisible ? 'rgba(255,255,255,0.2)' : currentPiece.color;
                             context.fillRect(currentPiece.x + x, currentPiece.y + y, 1, 1);
+                             // Optional: Add border/3D effect
+                            // context.strokeStyle = 'rgba(0,0,0,0.3)';
+                            // context.strokeRect(currentPiece.x + x, currentPiece.y + y, 1, 1);
                         }
                     });
                 });
             }
 
-            nextContext.fillStyle = '#220044';
-            nextContext.fillRect(0, 0, nextCanvas.width/(grid/2), nextCanvas.height/(grid/2));
+            // Draw next piece preview
+            nextContext.fillStyle = '#220044'; // Background for preview
+            nextContext.fillRect(0, 0, nextCanvas.width / (grid/2), nextCanvas.height / (grid/2)); // Clear preview canvas
             if (nextPiece) {
-                const offsetX = (4 - nextPiece.tetromino[0].length) / 2;
-                const offsetY = (4 - nextPiece.tetromino.length) / 2;
-                nextPiece.tetromino.forEach((row, y) => {
+                // Center the piece in the preview box (assuming 4x4 grid scaled)
+                const matrix = nextPiece.tetromino;
+                const previewScale = nextCanvas.width / (grid / 2); // Should be 4
+                const offsetX = (previewScale - matrix[0].length) / 2;
+                const offsetY = (previewScale - matrix.length) / 2;
+
+                nextContext.fillStyle = nextPiece.color;
+                matrix.forEach((row, y) => {
                     row.forEach((value, x) => {
                         if (value) {
-                            nextContext.fillStyle = nextPiece.color;
                             nextContext.fillRect(x + offsetX, y + offsetY, 1, 1);
                         }
                     });
@@ -415,580 +500,928 @@
             }
         }
 
-        function collide() {
-            const [m, o] = [currentPiece.tetromino, currentPiece];
-            for (let y = 0; y < m.length; y++) {
-                for (let x = 0; x < m[y].length; x++) {
-                    if (m[y][x] && 
-                        (playfield[y + o.y] && playfield[y + o.y][x + o.x]) !== 0) {
-                        return true;
+        function isValidMove(matrix, offsetX, offsetY) {
+            for (let y = 0; y < matrix.length; y++) {
+                for (let x = 0; x < matrix[y].length; x++) {
+                    if (matrix[y][x]) {
+                        const newX = currentPiece.x + x + offsetX;
+                        const newY = currentPiece.y + y + offsetY;
+
+                        // Check boundaries
+                        if (newX < 0 || newX >= cols || newY >= rows) {
+                            return false;
+                        }
+                        // Check collision with playfield (ignore negative Y for initial spawn)
+                        if (newY >= 0 && playfield[newY][newX]) {
+                            return false;
+                        }
                     }
                 }
             }
-            return false;
+            return true;
         }
 
+
         function merge() {
+            if (!currentPiece) return; // Safety check
             currentPiece.tetromino.forEach((row, y) => {
                 row.forEach((value, x) => {
                     if (value) {
-                        playfield[y + currentPiece.y][x + currentPiece.x] = 
-                            colors.indexOf(currentPiece.color);
+                        // Ensure we don't merge outside bounds (shouldn't happen with isValidMove)
+                        const mergeY = currentPiece.y + y;
+                        const mergeX = currentPiece.x + x;
+                        if (mergeY >= 0 && mergeY < rows && mergeX >= 0 && mergeX < cols) {
+                           playfield[mergeY][mergeX] = currentPiece.colorIndex; // Use stored color index
+                        } else if (mergeY < 0) {
+                            // Piece partially above the top - results in game over usually caught by next piece check
+                            gameOver = true;
+                        }
+                        // else { console.error("Attempted to merge outside bounds!"); } // Debugging
                     }
                 });
             });
-            isInvisible = false;
+            isInvisible = false; // Piece becomes visible once merged
         }
 
-        function moveDown() {
-            currentPiece.y++;
-            if (collide()) {
-                currentPiece.y--;
-                merge();
-                currentPiece = nextPiece;
-                nextPiece = createPiece();
-                if (collide()) {
-                    gameOver = true;
-                    alert(`遊戲結束！得分：${score}`);
-                    restartBtn.style.display = 'none';
-                    startBtn.style.display = 'flex';
-                    resetGame();
-                }
-                removeLines();
-            }
-            dropCounter = 0;
-            draw();
-        }
+         function moveDown() {
+             if (isPaused || gameOver || !gameStarted) return; // Don't move if paused, game over, or not started
+
+             if (!isValidMove(currentPiece.tetromino, 0, 1)) {
+                 // Cannot move down, merge and check for new piece/game over
+                 merge();
+
+                 // Check for game over *after* merging (if merge itself caused issues at the top)
+                 if (gameOver) {
+                     gameStarted = false;
+                     if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                     animationFrameId = null;
+                     alert(`遊戲結束！得分：${score}`);
+                     resetGame(); // Reset state and visuals
+                     startBtn.style.display = 'flex'; // Show start button
+                     restartBtn.style.display = 'none';
+                     pauseResumeBtn.style.display = 'none';
+                     return; // Exit function
+                 }
+
+                 removeLines(); // Check for line clears immediately after merge
+                 currentPiece = nextPiece;
+                 nextPiece = createPiece();
+
+                 // Check if the new piece immediately causes a collision
+                 if (!isValidMove(currentPiece.tetromino, 0, 0)) {
+                     // New piece collides immediately: Game Over
+                     gameOver = true;
+                     gameStarted = false; // Stop game logic
+                     if (animationFrameId) cancelAnimationFrame(animationFrameId); // Stop loop
+                     animationFrameId = null; // Clear the ID
+
+                     // Display the alert. Script execution pauses here.
+                     alert(`遊戲結束！得分：${score}`);
+
+                     // ----- FIX START -----
+                     // After the user clicks OK on the alert:
+                     resetGame(); // Reset the game state and visuals immediately
+
+                     // resetGame hides restart/pause and might show start,
+                     // but we explicitly set the desired state here for clarity:
+                     // Ensure only the start button is visible after game over.
+                     startBtn.style.display = 'flex';
+                     restartBtn.style.display = 'none';
+                     pauseResumeBtn.style.display = 'none';
+                     // The draw() call inside resetGame() will handle showing the cleared board.
+                     // ----- FIX END -----
+
+                     // No need to proceed further in this function after game over
+                     return;
+                 }
+             } else {
+                 // Move is valid
+                 currentPiece.y++;
+             }
+             dropCounter = 0; // Reset drop counter after any move down attempt
+             // No draw() here, let the main loop handle it
+         }
+
 
         function moveLeft() {
-            currentPiece.x--;
-            if (collide()) {
-                currentPiece.x++;
+             if (isPaused || gameOver || !gameStarted || !currentPiece) return;
+             if (isValidMove(currentPiece.tetromino, -1, 0)) {
+                currentPiece.x--;
+                // draw(); // Let main loop draw
             }
-            draw();
         }
 
         function moveRight() {
-            currentPiece.x++;
-            if (collide()) {
-                currentPiece.x--;
+            if (isPaused || gameOver || !gameStarted || !currentPiece) return;
+            if (isValidMove(currentPiece.tetromino, 1, 0)) {
+                currentPiece.x++;
+                // draw(); // Let main loop draw
             }
-            draw();
         }
 
         function rotate() {
-            const original = currentPiece.tetromino;
+            if (isPaused || gameOver || !gameStarted || !currentPiece) return;
+            const originalMatrix = currentPiece.tetromino;
+            const N = originalMatrix.length;
+            const M = originalMatrix[0].length;
             const rotated = [];
-            for (let i = 0; i < original[0].length; i++) {
-                const row = [];
-                for (let j = original.length - 1; j >= 0; j--) {
-                    row.push(original[j][i]);
+            for (let i = 0; i < M; i++) {
+                rotated[i] = [];
+                for (let j = 0; j < N; j++) {
+                    rotated[i][j] = originalMatrix[N - 1 - j][i];
                 }
-                rotated.push(row);
             }
+
+            // Wall Kick Logic (Basic) - More complex SRS needed for official feel
+            const originalX = currentPiece.x;
+            let kickOffset = 0;
+
+            if (!isValidMove(rotated, 0, 0)) {
+                // Try kicking left or right (simple kicks)
+                const kicks = [1, -1, 2, -2]; // Check +/- 1 then +/- 2
+                for (const kick of kicks) {
+                    if (isValidMove(rotated, kick, 0)) {
+                        kickOffset = kick;
+                        break; // Found valid kick
+                    }
+                }
+                if (kickOffset === 0) {
+                     // Rotation failed even with basic kicks
+                    return; // Don't rotate
+                }
+            }
+
+            // Apply successful rotation and kick
             currentPiece.tetromino = rotated;
-            if (collide()) {
-                currentPiece.tetromino = original;
-            }
-            draw();
+            currentPiece.x += kickOffset;
+            // draw(); // Let main loop draw
         }
 
         function removeLines() {
-            let lines = 0;
-            outer: for (let y = rows - 1; y >= 0; y--) {
-                for (let x = 0; x < cols; x++) {
-                    if (!playfield[y][x]) {
-                        continue outer;
-                    }
+            let linesCleared = 0;
+            let rowsToRemove = [];
+
+            // First pass: identify full rows
+            for (let y = rows - 1; y >= 0; y--) {
+                if (playfield[y].every(cell => cell !== 0)) {
+                    linesCleared++;
+                    rowsToRemove.push(y);
                 }
-                playfield.splice(y, 1);
-                playfield.unshift(new Array(cols).fill(0));
-                lines++;
-                y++;
             }
-            if (lines > 0) {
-                score += lines * 10 * bonusMultiplier;
+
+
+            if (linesCleared > 0) {
+                 // Second pass: remove rows and add new ones
+                 rowsToRemove.sort((a, b) => a - b); // Sort indices ascending
+                 for(let i = rowsToRemove.length - 1; i >= 0; i--) {
+                     playfield.splice(rowsToRemove[i], 1); // Remove the line
+                 }
+                 for (let i = 0; i < linesCleared; i++) {
+                      playfield.unshift(new Array(cols).fill(0)); // Add new empty lines at the top
+                 }
+
+
+                // Score calculation (example: 100 for 1, 300 for 2, 500 for 3, 800 for 4 lines)
+                let baseScore = 0;
+                switch (linesCleared) {
+                    case 1: baseScore = 100; break;
+                    case 2: baseScore = 300; break;
+                    case 3: baseScore = 500; break;
+                    case 4: baseScore = 800; break; // Tetris!
+                    default: baseScore = 100 * linesCleared; // Fallback
+                }
+                score += baseScore * bonusMultiplier;
                 scoreElement.textContent = score;
 
-                if (lines >= 2) {
+                // Visual effect for multiple lines
+                if (linesCleared >= 2) {
+                    const originalBg = document.body.style.background;
                     document.body.style.background = 'linear-gradient(135deg, #ff00ff, #00ffff)';
                     setTimeout(() => {
-                        document.body.style.background = 'linear-gradient(135deg, #1a0033, #330066)';
-                    }, 1000);
+                         // Only reset if not still in bonus effect or other effect
+                         if (document.body.style.background !== 'linear-gradient(135deg, #1a0033, #330066)') {
+                            document.body.style.background = 'linear-gradient(135deg, #1a0033, #330066)';
+                         }
+                    }, 300); // Shorter effect
                 }
 
-                if (Math.random() < 0.2) {
-                    if (Math.random() < 0.5) {
-                        dropInterval = 500;
-                        setTimeout(() => dropInterval = 1000, 5000);
-                    } else {
-                        playfield.pop();
-                        playfield.unshift(new Array(cols).fill(0));
-                        score += 50 * bonusMultiplier;
-                    }
-                }
-
-                if (Math.random() < 0.1) {
-                    bonusMultiplier = 2;
-                    bonusTime = 10000;
-                }
+                 // Random Bonus chance based on lines cleared
+                 if (Math.random() < 0.1 * linesCleared) {
+                     activateRandomBonus();
+                 }
             }
         }
 
+         function activateRandomBonus() {
+             const rand = Math.random();
+             if (rand < 0.4) { // Speed up temporarily
+                 console.log("BONUS: Speed Up!");
+                 const originalInterval = dropInterval;
+                 dropInterval = Math.max(100, dropInterval / 2); // Speed up, min 100ms
+                 setTimeout(() => { dropInterval = originalInterval; console.log("BONUS: Speed Normal."); }, 5000); // Back to normal after 5s
+             } else if (rand < 0.7) { // Clear bottom row
+                 console.log("BONUS: Clear bottom row!");
+                 if (rows > 0 && playfield.length === rows) { // Safety check
+                     playfield.pop(); // Remove last row
+                     playfield.unshift(new Array(cols).fill(0)); // Add empty row at top
+                     score += 50 * bonusMultiplier; // Small bonus score
+                     // draw(); // Let main loop draw
+                 }
+             } else { // Score Multiplier
+                 console.log("BONUS: 2x Score!");
+                 bonusMultiplier = 2;
+                 bonusTime = 10000; // 10 seconds
+                 // Add visual indicator for bonus? (e.g., flash score)
+             }
+             scoreElement.textContent = score; // Update score display if changed
+         }
+
+
         let dropCounter = 0;
-        let dropInterval = 1000;
+        let dropInterval = 1000; // Milliseconds per drop
         let lastTime = 0;
 
         function update(time = 0) {
-            if (!gameStarted || gameOver) {
-                draw();
-                return;
+            // Always request the next frame unless explicitly stopped
+             if (gameStarted && !gameOver && !isPaused) {
+                 animationFrameId = requestAnimationFrame(update);
+             } else {
+                 // Ensure we clear the ID if the loop condition isn't met
+                 animationFrameId = null;
+             }
+
+            if (gameOver || isPaused || !gameStarted) {
+                 // If paused, draw the pause overlay once
+                 if (isPaused) {
+                     // Draw pause overlay here if needed, but it's better handled in togglePause for efficiency
+                 }
+                 // If game over or not started, the loop should have been stopped or not started
+                 return;
             }
 
             const deltaTime = time - lastTime;
             lastTime = time;
             dropCounter += deltaTime;
 
-            if (dropCounter > dropInterval) {
-                moveDown();
-            }
-
+            // Update bonus timer
             if (bonusTime > 0) {
                 bonusTime -= deltaTime;
                 if (bonusTime <= 0) {
                     bonusMultiplier = 1;
+                    bonusTime = 0; // Ensure it's exactly 0
+                    console.log("Bonus multiplier ended.");
+                    // Update visual indicator if any
                 }
             }
 
-            draw();
-            requestAnimationFrame(update);
+            // Automatic drop
+            if (dropCounter > dropInterval) {
+                 moveDown(); // moveDown handles logic if piece locks or game over
+                 dropCounter = 0; // Reset counter after attempting drop
+            }
+
+            // Only draw if the game is in a valid state to be drawn
+            // (Prevents drawing during the pause overlay flicker)
+             if (gameStarted && !gameOver && !isPaused) {
+                draw(); // Draw current state
+            }
         }
 
-        // 重置遊戲函數
+        // Start Game Function
+        function startGame() {
+             // Prevent starting if already started or during game over transition
+             if (gameStarted || gameOver) {
+                 console.log("Game already started or just ended. Resetting before starting.");
+                 // Ensure a clean state if start is clicked rapidly after game over
+                 if(gameOver) resetGame();
+                 // else return; // Optionally prevent re-starting if already running
+             }
+
+            resetGame(); // Reset everything before starting a new game
+            gameStarted = true;
+            gameOver = false;
+            isPaused = false; // Ensure not paused
+            startBtn.style.display = 'none';
+            restartBtn.style.display = 'flex';
+            pauseResumeBtn.style.display = 'flex'; // Show pause button
+            pauseResumeBtn.innerHTML = '<i class="fas fa-pause"></i>'; // Ensure correct icon
+
+            // Reset time and start the loop
+            lastTime = performance.now();
+            if (animationFrameId) cancelAnimationFrame(animationFrameId); // Cancel previous loop if any
+            animationFrameId = requestAnimationFrame(update); // Start the loop
+        }
+
+        // Reset Game Function
         function resetGame() {
-            playfield.forEach(row => row.fill(0));
+            if (animationFrameId) {
+                 cancelAnimationFrame(animationFrameId); // Stop any active loop
+                 animationFrameId = null;
+            }
+            initPlayfield(); // Reset the board
             score = 0;
             scoreElement.textContent = score;
             bonusMultiplier = 1;
             bonusTime = 0;
-            dropInterval = 1000;
-            currentPiece = createPiece();
-            nextPiece = createPiece();
+            dropInterval = 1000; // Reset speed
+            currentPiece = createPiece(); // Get first piece
+            nextPiece = createPiece(); // Get next piece
             gameOver = false;
-            gameStarted = false;
-            document.body.style.background = 'linear-gradient(135deg, #1a0033, #330066)';
-            draw();
+            gameStarted = false; // Set to false until startGame is called
+            isPaused = false; // Reset pause state
+            document.body.style.background = 'linear-gradient(135deg, #1a0033, #330066)'; // Reset background
+            pauseResumeBtn.innerHTML = '<i class="fas fa-pause"></i>'; // Reset pause icon
+
+            // Button visibility should be handled by the caller (startGame, restart click, game over)
+            // We just reset the game state here. Draw the initial state.
+            draw(); // Draw the initial empty state
         }
 
-        // 按鍵長按處理
-        let keyIntervalId = null;
-        let keyHeld = false;
+         // Toggle Pause Function
+        function togglePause() {
+            // Can only pause/resume if the game has started and is not over
+            if (!gameStarted || gameOver) return;
 
-        function startKeyAction(action) {
-            if (!keyHeld && gameStarted && !gameOver) {
-                action();
-                keyHeld = true;
-                keyIntervalId = setInterval(action, 100);
+            isPaused = !isPaused;
+
+            if (isPaused) {
+                // Pause
+                wasPlayingMusicBeforePause = isPlaying; // Store current music state
+                if (isPlaying) {
+                    backgroundMusic.pause();
+                }
+                // Stop the game loop *after* storing music state
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+                pauseResumeBtn.innerHTML = '<i class="fas fa-play"></i>'; // Change icon to Play
+
+                // Draw "Paused" text overlay ONCE
+                context.fillStyle = 'rgba(0, 0, 0, 0.75)';
+                context.fillRect(0, rows / 2 - 2, cols, 4);
+                context.font = '2px "Courier New", monospace';
+                context.fillStyle = 'white';
+                context.textAlign = 'center';
+                context.fillText('PAUSED', cols / 2, rows / 2 + 0.5); // Adjust vertical position
+
+            } else {
+                // Resume
+                pauseResumeBtn.innerHTML = '<i class="fas fa-pause"></i>'; // Change icon to Pause
+                // Resume music if it was playing before pause
+                if (wasPlayingMusicBeforePause) {
+                    backgroundMusic.play().catch(e => console.error("Error resuming music:", e));
+                    // Note: isPlaying flag will be set by the music's 'onplay' event handler
+                }
+                // Reset lastTime to avoid huge deltaTime jump after pause
+                lastTime = performance.now();
+                dropCounter = 0; // Reset drop counter as well
+
+                // Restart the game loop only if it's not already running
+                if (!animationFrameId) {
+                     animationFrameId = requestAnimationFrame(update);
+                }
             }
         }
 
-        function stopKeyAction() {
-            if (keyIntervalId) {
-                clearInterval(keyIntervalId);
-                keyIntervalId = null;
-            }
-            keyHeld = false;
+
+        // --- Event Listeners ---
+
+        // Keyboard Controls
+        let keyRepeatTimeoutId = null;
+        let keyRepeatIntervalId = null;
+        const KEY_REPEAT_DELAY = 200; // ms before repeat starts
+        const KEY_REPEAT_RATE = 50;  // ms between repeats
+
+        function clearKeyTimers() {
+            if (keyRepeatTimeoutId) clearTimeout(keyRepeatTimeoutId);
+            if (keyRepeatIntervalId) clearInterval(keyRepeatIntervalId);
+            keyRepeatTimeoutId = null;
+            keyRepeatIntervalId = null;
         }
 
         document.addEventListener('keydown', event => {
-            if (!gameStarted || gameOver) return;
+            // Allow pause toggle anytime
+            if (event.key === 'p' || event.key === 'P') {
+                 event.preventDefault();
+                 togglePause();
+                 return; // Don't process other keys if pausing
+            }
+
+            // Ignore game input if not running or paused
+            if (!gameStarted || gameOver || isPaused) {
+                 return;
+            }
+
+            // Prevent repeating actions if key is already held down (handled by timeout/interval)
+            if (event.repeat) {
+                 return;
+            }
+
+            let action = null;
+            let isRepeatable = false;
+
             switch (event.key) {
                 case 'ArrowLeft':
-                    event.preventDefault();
-                    startKeyAction(moveLeft);
+                case 'a': // Add WASD option
+                    action = moveLeft;
+                    isRepeatable = true;
                     break;
                 case 'ArrowRight':
-                    event.preventDefault();
-                    startKeyAction(moveRight);
+                case 'd': // Add WASD option
+                    action = moveRight;
+                    isRepeatable = true;
                     break;
                 case 'ArrowDown':
-                    event.preventDefault();
-                    startKeyAction(moveDown);
+                case 's': // Add WASD option
+                    action = moveDown;
+                    isRepeatable = true; // Holding down speeds up drop
                     break;
                 case 'ArrowUp':
-                    event.preventDefault();
-                    rotate();
+                case 'w': // Add WASD option
+                case ' ': // Space for rotate
+                    action = rotate;
+                    isRepeatable = false; // Rotate does not repeat
                     break;
+                 default:
+                     return; // Ignore other keys
             }
+
+            event.preventDefault(); // Prevent default browser action (scrolling etc.)
+            clearKeyTimers(); // Clear any previous timers
+
+             if (action) {
+                 action(); // Perform action once immediately
+
+                 if (isRepeatable) {
+                     // Start timers for repeating action
+                     keyRepeatTimeoutId = setTimeout(() => {
+                         keyRepeatIntervalId = setInterval(() => {
+                             if (!isPaused && !gameOver && gameStarted) { // Double check state
+                                 action();
+                             } else {
+                                 clearKeyTimers(); // Stop if state changes
+                             }
+                         }, KEY_REPEAT_RATE);
+                     }, KEY_REPEAT_DELAY);
+                 }
+             }
         });
 
         document.addEventListener('keyup', event => {
-            if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowDown') {
-                stopKeyAction();
+             // Stop repeating action when key is released
+             switch (event.key) {
+                case 'ArrowLeft':
+                case 'a':
+                case 'ArrowRight':
+                case 'd':
+                case 'ArrowDown':
+                case 's':
+                case 'ArrowUp': // Also clear for up/space just in case
+                case 'w':
+                case ' ':
+                    clearKeyTimers();
+                    break;
             }
         });
 
-        // 按鈕長按處理 (支援滑鼠和觸控)
-        let buttonIntervalId = null;
+        // Button Controls (Touch and Mouse) - Simplified Approach
+        // Use mousedown/touchstart for single action or start of repeat
+        // Use mouseup/mouseleave/touchend/touchcancel to stop repeat
 
-        function startButtonAction(action, button) {
-            if (gameStarted && !gameOver) {
-                action();
-                buttonIntervalId = setInterval(action, 100);
-            }
+        let buttonRepeatIntervalId = null;
+        let buttonRepeatAction = null;
+        const BUTTON_REPEAT_RATE = 80; // ms repeat rate for buttons
+
+        function startButtonRepeat(action) {
+            if (buttonRepeatIntervalId) clearInterval(buttonRepeatIntervalId); // Clear existing
+            buttonRepeatAction = action;
+            buttonRepeatIntervalId = setInterval(() => {
+                 if (gameStarted && !gameOver && !isPaused && buttonRepeatAction) {
+                     buttonRepeatAction();
+                 } else {
+                     stopButtonRepeat(); // Stop if state changes
+                 }
+            }, BUTTON_REPEAT_RATE);
         }
 
-        function stopButtonAction() {
-            if (buttonIntervalId) {
-                clearInterval(buttonIntervalId);
-                buttonIntervalId = null;
-            }
+        function stopButtonRepeat() {
+             if (buttonRepeatIntervalId) {
+                 clearInterval(buttonRepeatIntervalId);
+             }
+             buttonRepeatIntervalId = null;
+             buttonRepeatAction = null;
         }
 
-        // 按下時變色的通用函數
+        // Generic function to handle button press style
         function setPressedStyle(button) {
-            if (button.classList.contains('start-button') || button.classList.contains('restart-button')) {
-                button.style.background = 'linear-gradient(135deg, #009999, #4d004d)';
-            } else if (!button.classList.contains('music-button')) {
+             if (!button || button.disabled) return;
+             button.setAttribute('data-pressed', 'true'); // Use data attribute
+
+             if (button.classList.contains('start-button')) {
+                 button.style.background = 'linear-gradient(135deg, #009999, #4d004d)';
+                 button.style.transform = 'translate(-50%, -50%) scale(0.98)'; // Add slight scale
+             } else if (button.classList.contains('game-action-button')) {
+                  button.style.background = 'linear-gradient(135deg, #009999, #4d004d)';
+                  button.style.transform = 'translateX(-50%) scale(0.95)'; // Add slight scale
+             } else if (button.classList.contains('music-button')) {
+                  button.style.transform = 'scale(0.9)'; // Slightly more shrink
+             }
+             else { // Control buttons
                 button.style.background = '#660066';
-            }
-            button.style.transform = button.classList.contains('start-button') ? 'translate(-50%, -50%)' : 
-                                    button.classList.contains('restart-button') ? 'translateX(-50%)' : 'scale(1)';
+                button.style.transform = 'scale(0.95)'; // Add slight scale
+             }
         }
-
+        // Generic function to handle button release style
         function resetButtonStyle(button) {
-            if (button.classList.contains('start-button') || button.classList.contains('restart-button')) {
-                button.style.background = 'linear-gradient(135deg, #00ffff, #800080)';
-            } else if (!button.classList.contains('music-button')) {
+             if (!button || !button.hasAttribute('data-pressed')) return;
+             button.removeAttribute('data-pressed');
+
+             if (button.classList.contains('start-button')) {
+                 button.style.background = 'linear-gradient(135deg, #00ffff, #800080)';
+                 button.style.transform = 'translate(-50%, -50%)';
+             } else if (button.classList.contains('game-action-button')) {
+                 button.style.background = 'linear-gradient(135deg, #00ffff, #800080)';
+                 button.style.transform = 'translateX(-50%)';
+             } else if (button.classList.contains('music-button')) {
+                 button.style.transform = 'scale(1)';
+             }
+             else { // Control buttons
                 button.style.background = '#ff00ff';
-            }
-            button.style.transform = button.classList.contains('start-button') ? 'translate(-50%, -50%)' : 
-                                    button.classList.contains('restart-button') ? 'translateX(-50%)' : '';
+                button.style.transform = ''; // Reset transform
+             }
         }
 
-        // 滑鼠事件
-        leftBtn.addEventListener('mousedown', () => {
-            setPressedStyle(leftBtn);
-            startButtonAction(moveLeft, leftBtn);
-        });
-        rightBtn.addEventListener('mousedown', () => {
-            setPressedStyle(rightBtn);
-            startButtonAction(moveRight, rightBtn);
-        });
-        downBtn.addEventListener('mousedown', () => {
-            setPressedStyle(downBtn);
-            startButtonAction(moveDown, downBtn);
-        });
-        rotateBtn.addEventListener('mousedown', () => setPressedStyle(rotateBtn));
-        startBtn.addEventListener('mousedown', () => setPressedStyle(startBtn));
-        restartBtn.addEventListener('mousedown', () => setPressedStyle(restartBtn));
-        playPauseBtn.addEventListener('mousedown', () => setPressedStyle(playPauseBtn));
+        // Attach listeners using a helper function
+        function addButtonListeners(button, action, isRepeatable = false) {
+             const handlePress = (event) => {
+                 if (event.type === 'touchstart') event.preventDefault(); // Prevent default touch behavior like scrolling
+                 if (!gameStarted || gameOver || isPaused) {
+                      // Allow Start, Restart, Pause buttons even when game not running
+                     if (button === startBtn || button === restartBtn || button === pauseResumeBtn) {
+                          // Special handling for these below
+                     } else {
+                         return; // Ignore game control inputs
+                     }
+                 }
 
-        document.addEventListener('mouseup', (e) => {
-            stopButtonAction();
-            [leftBtn, rightBtn, downBtn, rotateBtn, startBtn, restartBtn, playPauseBtn].forEach(btn => resetButtonStyle(btn));
-        });
-        document.addEventListener('mouseleave', (e) => {
-            stopButtonAction();
-            [leftBtn, rightBtn, downBtn, rotateBtn, startBtn, restartBtn, playPauseBtn].forEach(btn => resetButtonStyle(btn));
-        });
+                 setPressedStyle(button);
+                 action(); // Execute action once immediately
 
-        // 觸控事件
-        leftBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            setPressedStyle(leftBtn);
-            startButtonAction(moveLeft, leftBtn);
-        });
-        rightBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            setPressedStyle(rightBtn);
-            startButtonAction(moveRight, rightBtn);
-        });
-        downBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            setPressedStyle(downBtn);
-            startButtonAction(moveDown, downBtn);
-        });
-        rotateBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            setPressedStyle(rotateBtn);
-            if (gameStarted && !gameOver) rotate();
-        });
-        startBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            setPressedStyle(startBtn);
-            if (!gameStarted) {
-                gameStarted = true;
-                gameOver = false;
-                startBtn.style.display = 'none';
-                restartBtn.style.display = 'flex';
-                update();
-            }
-        });
-        restartBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            setPressedStyle(restartBtn);
-            if (gameStarted) resetGame();
-            startBtn.style.display = 'flex';
-            restartBtn.style.display = 'none';
-        });
-        playPauseBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            setPressedStyle(playPauseBtn);
+                 if (isRepeatable) {
+                     startButtonRepeat(action); // Start repeating
+                 }
+             };
+
+             button.addEventListener('mousedown', handlePress);
+             button.addEventListener('touchstart', handlePress, { passive: false }); // Need passive: false for preventDefault
+        }
+
+        addButtonListeners(leftBtn, moveLeft, true);
+        addButtonListeners(rightBtn, moveRight, true);
+        addButtonListeners(downBtn, moveDown, true);
+        addButtonListeners(rotateBtn, rotate, false); // Rotate is not repeatable
+
+        // Global listeners to stop repeating actions and reset style
+        const handleRelease = (event) => {
+            stopButtonRepeat();
+            // Reset style for all potentially pressed buttons more robustly
+             document.querySelectorAll('button[data-pressed="true"]').forEach(btn => {
+                 resetButtonStyle(btn);
+             });
+        };
+
+        ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(eventType => {
+            document.addEventListener(eventType, handleRelease);
         });
 
-        document.addEventListener('touchend', (e) => {
-            stopButtonAction();
-            [leftBtn, rightBtn, downBtn, rotateBtn, startBtn, restartBtn, playPauseBtn].forEach(btn => resetButtonStyle(btn));
-        });
-        document.addEventListener('touchcancel', (e) => {
-            stopButtonAction();
-            [leftBtn, rightBtn, downBtn, rotateBtn, startBtn, restartBtn, playPauseBtn].forEach(btn => resetButtonStyle(btn));
-        });
 
-        // 音樂控制
+        // --- Specific Button Actions ---
+
+        // Start Button
+        const handleStartPress = () => {
+             setPressedStyle(startBtn);
+             startGame();
+             // No repeat needed
+        };
+        startBtn.addEventListener('mousedown', handleStartPress);
+        startBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handleStartPress(); }, { passive: false });
+
+        // Restart Button
+        const handleRestartPress = () => {
+             setPressedStyle(restartBtn);
+             resetGame(); // Reset game state FIRST
+             startBtn.style.display = 'flex'; // THEN show start button
+             restartBtn.style.display = 'none'; // Hide restart
+             pauseResumeBtn.style.display = 'none'; // Hide pause
+             // No repeat needed
+        }
+        restartBtn.addEventListener('mousedown', handleRestartPress);
+        restartBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handleRestartPress(); }, { passive: false });
+
+
+        // Pause/Resume Button
+        const handlePausePress = () => {
+             setPressedStyle(pauseResumeBtn);
+             togglePause();
+             // No repeat needed
+        }
+        pauseResumeBtn.addEventListener('mousedown', handlePausePress);
+        pauseResumeBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handlePausePress(); }, { passive: false });
+
+
+        // --- Music Controls ---
         backgroundMusic.volume = 0.5;
-        let isPlaying = false;
+        let isPlaying = false; // Track music playing state separately
 
-        playPauseBtn.addEventListener('click', () => {
+        // Update volume slider background fill dynamically
+        function updateVolumeSliderFill() {
+            const percentage = volumeSlider.value * 100;
+             // Webkit uses background gradient modification
+             volumeSlider.style.background = `linear-gradient(to right, #00ffff 0%, #800080 ${percentage}%, #220044 ${percentage}%, #220044 100%)`;
+            // For Firefox, setting the background on the element works if ::-moz-range-progress is styled appropriately in CSS
+            // The CSS already handles ::-moz-range-progress, so this might be redundant for FF but good for Webkit.
+        }
+
+
+        playPauseBtn.addEventListener('click', () => { // Using simple click for toggle is fine
+             setPressedStyle(playPauseBtn); // Give visual feedback
+             setTimeout(() => resetButtonStyle(playPauseBtn), 150); // Reset style after a short delay
+
             if (isPlaying) {
                 backgroundMusic.pause();
-                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                // onpause handler will set isPlaying = false and update icon
             } else {
-                backgroundMusic.play();
-                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                // Attempt to play, handle potential errors (e.g., user interaction needed)
+                backgroundMusic.play().then(() => {
+                   // onplay handler will set isPlaying = true and update icon
+                 }).catch(error => {
+                     console.error("Music play failed (User interaction might be needed first):", error);
+                     // Ensure state is correct if play fails
+                     isPlaying = false;
+                     playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                 });
             }
-            isPlaying = !isPlaying;
+            // Don't toggle isPlaying here, let the event handlers do it
         });
 
-        playPauseBtn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            if (isPlaying) {
-                backgroundMusic.pause();
-                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-            } else {
-                backgroundMusic.play();
-                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            }
-            isPlaying = !isPlaying;
-        });
+         // Handle music state changes reliably
+         backgroundMusic.onpause = () => {
+             isPlaying = false;
+             // Only update icon if the game isn't paused AND intending to resume music
+             if (!(isPaused && wasPlayingMusicBeforePause)) {
+                  playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+             }
+             console.log("Music paused.");
+         };
+          backgroundMusic.onplay = () => {
+             isPlaying = true;
+             playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+             console.log("Music playing.");
+         };
+         backgroundMusic.onended = () => {
+             isPlaying = false;
+             playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+             console.log("Music ended.");
+             // Since loop is enabled on the audio tag, this might not fire as expected unless loop fails.
+         }
+
 
         volumeSlider.addEventListener('input', () => {
             backgroundMusic.volume = volumeSlider.value;
-            const percentage = volumeSlider.value * 100;
-            volumeSlider.style.backgroundPosition = `${100 - percentage}% 0`;
+             updateVolumeSliderFill();
         });
 
-        volumeSlider.style.backgroundPosition = '50% 0';
+        // Initialize volume slider fill on load
+        updateVolumeSliderFill();
 
+
+        // --- Decor Image Interaction ---
         let currentScale = 0.85;
+        let isExploding = false; // Prevent multi-clicks during explosion
 
-        decorImage.addEventListener('click', () => {
-            if (!gameStarted || gameOver) return;
-            currentScale += 0.2;
-            decorImage.style.transform = `translateX(-50%) scale(${currentScale}) rotate(${currentScale * 360}deg)`;
-            if (currentScale >= 2.5) {
+        function handleDecorClick() {
+             if (!gameStarted || gameOver || isPaused || isExploding) return; // Only interact during active gameplay & not exploding
+
+             currentScale += 0.2;
+             decorImage.style.transform = `translateX(-50%) scale(${currentScale}) rotate(${currentScale * 60}deg)`; // More subtle rotation
+
+             if (currentScale >= 1.8) { // Adjusted threshold
                 explode();
-            }
-        });
+             } else {
+                 // Add a little visual feedback even before explosion
+                 decorImage.style.filter = `drop-shadow(3px 3px 6px #ff00ff) drop-shadow(6px 6px 12px #00ffff) hue-rotate(${currentScale * 90}deg)`;
+             }
+        }
+
+        decorImage.addEventListener('click', handleDecorClick);
+        decorImage.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+             setPressedStyle(decorImage); // Optional: add visual feedback for touch
+             handleDecorClick();
+             setTimeout(()=> resetButtonStyle(decorImage), 100); // Reset style
+        }, { passive: false });
+
 
         function explode() {
+            if (isExploding) return;
+            isExploding = true;
+
             const rect = decorImage.getBoundingClientRect();
+            const gameContainerRect = document.querySelector('.game-container').getBoundingClientRect();
             const explosionCount = 20;
-            
-            decorImage.style.opacity = '0';
-            
+
+            decorImage.style.opacity = '0'; // Hide original image
+            decorImage.style.pointerEvents = 'none'; // Disable further clicks during animation
+
             for (let i = 0; i < explosionCount; i++) {
                 const explosion = document.createElement('div');
                 explosion.className = 'explosion';
-                explosion.style.left = `${rect.left + Math.random() * rect.width}px`;
-                explosion.style.top = `${rect.top + Math.random() * rect.height}px`;
+                // Position relative to viewport, centered around image
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.random() * (rect.width * 0.8); // Spread within image area
+                explosion.style.left = `${rect.left + rect.width / 2 + Math.cos(angle) * radius}px`;
+                explosion.style.top = `${rect.top + rect.height / 2 + Math.sin(angle) * radius}px`;
                 document.body.appendChild(explosion);
-                setTimeout(() => explosion.remove(), 700);
+                // Random delay before removing for staggered effect
+                setTimeout(() => explosion.remove(), 600 + Math.random() * 200);
             }
-            
-            const scoreChange = [-20, -10, -5, 0, 5, 10, 20][Math.floor(Math.random() * 7)];
-            score += scoreChange;
+
+            // Random score change effect
+            const scoreChange = [-20, -10, -5, 5, 10, 20, 50][getRandomInt(7)];
+            score = Math.max(0, score + scoreChange); // Ensure score doesn't go below 0
             scoreElement.textContent = score;
-            
+
+            // Score change text animation
             const scoreAnimation = document.createElement('div');
-            scoreAnimation.textContent = scoreChange >= 0 ? `+${scoreChange}` : scoreChange;
+            scoreAnimation.textContent = scoreChange >= 0 ? `+${scoreChange}` : `${scoreChange}`;
             scoreAnimation.style.position = 'absolute';
+            // Center animation text over where the image was, relative to game container maybe?
             scoreAnimation.style.left = `${rect.left + rect.width / 2}px`;
             scoreAnimation.style.top = `${rect.top + rect.height / 2}px`;
-            scoreAnimation.style.color = scoreChange >= 0 ? '#00ff00' : '#ff0000';
+            scoreAnimation.style.color = scoreChange >= 0 ? '#0f0' : '#f44'; // Bright green/red
             scoreAnimation.style.fontSize = '24px';
+            scoreAnimation.style.fontWeight = 'bold';
             scoreAnimation.style.fontFamily = "'Courier New', monospace";
-            scoreAnimation.style.textShadow = '2px 2px 4px #ff00ff, 4px 4px 8px #00ffff';
-            scoreAnimation.style.zIndex = '100';
+            scoreAnimation.style.textShadow = '1px 1px 3px rgba(0,0,0,0.7)';
+            scoreAnimation.style.zIndex = '101'; // Above explosions
             scoreAnimation.style.transform = 'translate(-50%, -50%)';
+            scoreAnimation.style.pointerEvents = 'none';
+            scoreAnimation.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
             document.body.appendChild(scoreAnimation);
 
-            let animationFrame = 0;
-            function animateScore() {
-                animationFrame++;
-                scoreAnimation.style.top = `${parseFloat(scoreAnimation.style.top) - 1}px`;
-                scoreAnimation.style.opacity = 1 - (animationFrame / 50);
-                
-                if (animationFrame < 50) {
-                    requestAnimationFrame(animateScore);
-                } else {
-                    scoreAnimation.remove();
-                }
-            }
-            requestAnimationFrame(animateScore);
-            
+            // Animate score text upward fade
+            requestAnimationFrame(() => { // Use rAF for smoother start
+                scoreAnimation.style.opacity = '0';
+                scoreAnimation.style.transform = 'translate(-50%, -150%) scale(1.2)'; // Move up more and slight zoom out
+            });
+
+            setTimeout(() => scoreAnimation.remove(), 600); // Remove after animation
+
+            // Reset image after a delay
             setTimeout(() => {
                 currentScale = 0.85;
-                decorImage.style.transform = `translateX(-50%) scale(${currentScale}) rotate(0deg)`;
+                decorImage.style.transform = `translateX(-50%) scale(${currentScale})`; // Reset transform
+                decorImage.style.filter = 'drop-shadow(2px 2px 4px #ff00ff) drop-shadow(4px 4px 8px #00ffff)'; // Reset filter
                 decorImage.style.opacity = '1';
-            }, 700);
+                decorImage.style.pointerEvents = 'auto'; // Re-enable clicks
+                isExploding = false; // Allow interaction again
+            }, 900); // Slightly longer delay
         }
 
-        // 初始化遊戲但不開始
-        currentPiece = createPiece();
-        nextPiece = createPiece();
-        draw();
 
-        startBtn.addEventListener('click', () => {
-            if (!gameStarted) {
-                gameStarted = true;
-                gameOver = false;
-                startBtn.style.display = 'none';
-                restartBtn.style.display = 'flex';
-                update();
-            }
-        });
-
-        rotateBtn.addEventListener('click', () => {
-            if (gameStarted && !gameOver) rotate();
-        });
-
-        restartBtn.addEventListener('click', () => {
-            if (gameStarted) resetGame();
-            startBtn.style.display = 'flex';
-            restartBtn.style.display = 'none';
-        });
-
-        // 背景圖案生成（平均分散）
-        function createBackgroundPatterns() {
+        // --- Background Pattern Interaction ---
+         function createBackgroundPatterns() {
+            const container = document.body; // Add to body
             const patternCount = 15;
-            const gridRows = 3; // 網格行數
-            const gridCols = 5; // 網格列數
-            const patternsPerCell = Math.ceil(patternCount / (gridRows * gridCols));
-            let patternIndex = 0;
+            const patternUrl = './image/LiyuChill.svg'; // Define URL once
 
-            for (let row = 0; row < gridRows && patternIndex < patternCount; row++) {
-                for (let col = 0; col < gridCols && patternIndex < patternCount; col++) {
-                    for (let i = 0; i < patternsPerCell && patternIndex < patternCount; i++) {
-                        const img = document.createElement('img');
-                        img.src = './image/LiyuChill.svg';
-                        img.className = 'background-pattern';
+            // Check if image exists (optional, basic check)
+            const imgTest = new Image();
+            imgTest.onerror = () => { console.warn("Background pattern image not found at:", patternUrl); }
+            imgTest.src = patternUrl;
 
-                        // 隨機大小 (50px 到 200px)
-                        const size = Math.random() * 150 + 50;
-                        img.style.width = `${size}px`;
-                        img.style.height = 'auto';
+            for (let i = 0; i < patternCount; i++) {
+                const img = document.createElement('img');
+                img.src = patternUrl;
+                img.alt = ""; // Decorative image, empty alt
+                img.className = 'background-pattern';
+                img.draggable = false; // Prevent native image dragging
+                img.style.willChange = 'transform, opacity'; // Hint browser for optimization
 
-                        // 網格內隨機位置
-                        const cellWidth = 100 / gridCols;
-                        const cellHeight = 100 / gridRows;
-                        const xOffset = (col * cellWidth) + (Math.random() * cellWidth * 0.8) + (cellWidth * 0.1);
-                        const yOffset = (row * cellHeight) + (Math.random() * cellHeight * 0.8) + (cellHeight * 0.1);
-                        img.style.left = `${xOffset}vw`;
-                        img.style.top = `${yOffset}vh`;
+                const size = Math.random() * 100 + 50; // Size range 50px to 150px
+                img.style.width = `${size}px`;
+                img.style.height = 'auto';
 
-                        // 隨機透明度 (0.1 到 0.3)
-                        img.style.opacity = Math.random() * 0.2 + 0.1;
+                // Position randomly across viewport
+                img.style.left = `${Math.random() * 95}vw`; // Avoid edges slightly
+                img.style.top = `${Math.random() * 95}vh`;
 
-                        // 隨機旋轉速度 (5s 到 20s)
-                        const spinDuration = Math.random() * 15 + 5;
-                        img.style.animation = `spin ${spinDuration}s linear infinite`;
+                img.style.opacity = Math.random() * 0.15 + 0.05; // Opacity 0.05 to 0.2
 
-                        // 儲存初始樣式
-                        img.dataset.originalWidth = size;
-                        img.dataset.originalLeft = xOffset;
-                        img.dataset.originalTop = yOffset;
-                        img.dataset.spinDuration = spinDuration;
+                const spinDuration = Math.random() * 15 + 10; // Duration 10s to 25s
+                img.style.animation = `spin ${spinDuration}s linear infinite ${Math.random() > 0.5 ? 'reverse' : ''}`; // Add random reverse
 
-                        document.body.appendChild(img);
-                        patternIndex++;
-                    }
-                }
+                container.appendChild(img);
             }
-
-            // 添加互動功能
-            addPatternInteraction();
+             addPatternInteraction(); // Add interaction after creation
         }
 
-        // 圖案互動功能
         function addPatternInteraction() {
             const patterns = document.querySelectorAll('.background-pattern');
+            let draggedPattern = null;
+            let offsetX = 0, offsetY = 0;
+
+            function startDrag(pattern, clientX, clientY) {
+                 if (draggedPattern) return; // Only drag one at a time
+                 draggedPattern = pattern;
+                 draggedPattern.classList.add('dragging');
+                 const rect = draggedPattern.getBoundingClientRect();
+                 offsetX = clientX - rect.left;
+                 offsetY = clientY - rect.top;
+                 draggedPattern.style.animationPlayState = 'paused'; // Pause spin while dragging
+                 // Increase opacity and Z-index via CSS class '.dragging'
+            }
+
+             function drag(clientX, clientY) {
+                 if (!draggedPattern) return;
+                 // Calculate new top-left position in viewport pixels
+                 let newX = clientX - offsetX;
+                 let newY = clientY - offsetY;
+
+                  // Constrain dragging within viewport
+                  const rect = draggedPattern.getBoundingClientRect();
+                  newX = Math.max(0, Math.min(newX, window.innerWidth - rect.width));
+                  newY = Math.max(0, Math.min(newY, window.innerHeight - rect.height));
+
+                 // Update position using translate for performance, convert vw/vh later if needed
+                 // draggedPattern.style.transform = `translate(${newX - parseFloat(draggedPattern.style.left || 0)}px, ${newY - parseFloat(draggedPattern.style.top || 0)}px) scale(1.5)`; // Apply scale while dragging
+
+                 // Simpler: Update left/top directly (might be less performant than transform)
+                 draggedPattern.style.left = `${(newX / window.innerWidth) * 100}vw`;
+                 draggedPattern.style.top = `${(newY / window.innerHeight) * 100}vh`;
+                  // Apply dragging scale via CSS class '.dragging' and @keyframes shake
+            }
+
+            function stopDrag() {
+                 if (!draggedPattern) return;
+                 draggedPattern.classList.remove('dragging');
+                 draggedPattern.style.animationPlayState = 'running'; // Resume spin
+                 // Optional: Persist dragged position or snap back
+                 // No need to reset transform manually if using CSS class for scale
+                 draggedPattern = null;
+                 offsetX = 0;
+                 offsetY = 0;
+            }
 
             patterns.forEach(pattern => {
-                let isDragging = false;
-                let startX, startY;
-
-                // 滑鼠事件
+                // Mouse Events
                 pattern.addEventListener('mousedown', (e) => {
-                    isDragging = true;
-                    pattern.classList.add('dragging');
-                    startX = e.clientX - parseFloat(pattern.style.left) * window.innerWidth / 100;
-                    startY = e.clientY - parseFloat(pattern.style.top) * window.innerHeight / 100;
-                    e.preventDefault();
+                    startDrag(pattern, e.clientX, e.clientY);
+                    e.preventDefault(); // Prevent text selection, etc.
                 });
 
-                document.addEventListener('mousemove', (e) => {
-                    if (isDragging) {
-                        const newLeft = (e.clientX - startX) / window.innerWidth * 100;
-                        const newTop = (e.clientY - startY) / window.innerHeight * 100;
-                        pattern.style.left = `${newLeft}vw`;
-                        pattern.style.top = `${newTop}vh`;
-                    }
-                });
-
-                document.addEventListener('mouseup', () => {
-                    if (isDragging) {
-                        isDragging = false;
-                        pattern.classList.remove('dragging');
-                        pattern.style.width = `${pattern.dataset.originalWidth}px`;
-                        pattern.style.animation = `spin ${pattern.dataset.spinDuration}s linear infinite`;
-                    }
-                });
-
-                // 觸控事件
-                pattern.addEventListener('touchstart', (e) => {
-                    isDragging = true;
-                    pattern.classList.add('dragging');
-                    const touch = e.touches[0];
-                    startX = touch.clientX - parseFloat(pattern.style.left) * window.innerWidth / 100;
-                    startY = touch.clientY - parseFloat(pattern.style.top) * window.innerHeight / 100;
-                    e.preventDefault();
-                });
-
-                document.addEventListener('touchmove', (e) => {
-                    if (isDragging) {
-                        const touch = e.touches[0];
-                        const newLeft = (touch.clientX - startX) / window.innerWidth * 100;
-                        const newTop = (touch.clientY - startY) / window.innerHeight * 100;
-                        pattern.style.left = `${newLeft}vw`;
-                        pattern.style.top = `${newTop}vh`;
-                    }
-                });
-
-                document.addEventListener('touchend', () => {
-                    if (isDragging) {
-                        isDragging = false;
-                        pattern.classList.remove('dragging');
-                        pattern.style.width = `${pattern.dataset.originalWidth}px`;
-                        pattern.style.animation = `spin ${pattern.dataset.spinDuration}s linear infinite`;
-                    }
-                });
+                 // Touch Events
+                 pattern.addEventListener('touchstart', (e) => {
+                     if (e.touches.length === 1) {
+                         const touch = e.touches[0];
+                         startDrag(pattern, touch.clientX, touch.clientY);
+                         e.preventDefault(); // Prevent scrolling etc.
+                     }
+                 }, { passive: false });
             });
+
+            // Global move and up listeners on document/window for better capture
+            document.addEventListener('mousemove', (e) => {
+                if (draggedPattern) {
+                    drag(e.clientX, e.clientY);
+                }
+            }, { passive: true }); // Move can often be passive
+
+            document.addEventListener('mouseup', stopDrag);
+
+            document.addEventListener('touchmove', (e) => {
+                 if (draggedPattern && e.touches.length === 1) {
+                     const touch = e.touches[0];
+                     drag(touch.clientX, touch.clientY);
+                     // Touchmove often needs preventDefault to stop scrolling while dragging
+                     // e.preventDefault(); // Re-add if scrolling is an issue
+                 }
+            }, { passive: false }); // Need passive: false if using preventDefault
+
+            document.addEventListener('touchend', stopDrag);
+            document.addEventListener('touchcancel', stopDrag); // Handle cancelled touches
         }
 
-        // 初始化背景圖案
-        createBackgroundPatterns();
+        // --- Initialization ---
+        createBackgroundPatterns(); // Create background patterns
+        resetGame(); // Set up the initial game state (board cleared, pieces ready)
+        // Ensure correct initial button state: Only Start visible
+        startBtn.style.display = 'flex';
+        restartBtn.style.display = 'none';
+        pauseResumeBtn.style.display = 'none';
+        // No need to call draw() here, resetGame() already does.
+
     </script>
 </body>
 </html>
